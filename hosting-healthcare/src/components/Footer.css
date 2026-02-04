@@ -3,6 +3,8 @@
   color: #ffffff;
   padding: 60px 20px 30px;
   font-family: 'Inter', sans-serif;
+  border-top-left-radius: 2%;
+  border-top-right-radius: 2%;
 }
 
 .footer-container {

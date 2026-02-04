@@ -19,24 +19,24 @@ body {
   color: var(--text-main);
 }
 
-.signup-container {
+.login-page-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem; 
+  padding: 1rem;
 }
 
-.signup-card {
+.login-card {
   background: white;
   width: 100%;
-  max-width: 480px; 
+  max-width: 480px;
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
-.header {
+.login-header {
   text-align: center;
   margin-bottom: 24px;
 }
@@ -47,19 +47,23 @@ body {
   margin-bottom: 12px;
 }
 
-.header h1 {
+.login-header h1 {
   font-size: 20px;
   margin: 0 0 8px 0;
   font-weight: 700;
 }
 
-.header p {
+.login-header p {
   color: var(--text-muted);
   font-size: 14px;
   margin: 0;
 }
 
-/* Form Layout */
+/* Form Styles */
+.login-form {
+  margin-bottom: 20px;
+}
+
 .form-group {
   margin-bottom: 16px;
 }
@@ -71,7 +75,7 @@ body {
   font-size: 13px;
 }
 
-input:not(.phone-input-field) {
+.form-group input {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid var(--border-gray);
@@ -81,41 +85,17 @@ input:not(.phone-input-field) {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus {
+.form-group input:focus {
   border-color: var(--primary-purple);
   box-shadow: 0 0 0 3px rgba(90, 39, 199, 0.1);
 }
 
-/* Phone Input Overrides */
-.phone-input-container {
-  width: 100% !important;
-}
-
-.phone-input-field {
-  width: 100% !important;
-  height: 45px !important;
-  border: 1px solid var(--border-gray) !important;
-  border-radius: 10px !important;
-  font-size: 14px !important;
-}
-
-.phone-input-field:focus {
-  border-color: var(--primary-purple) !important;
-  box-shadow: 0 0 0 3px rgba(90, 39, 199, 0.1) !important;
-}
-
-.phone-dropdown-btn {
-  border: 1px solid var(--border-gray) !important;
-  border-radius: 10px 0 0 10px !important;
-  background: white !important;
-}
-
-/* Password UI */
-.password-wrapper {
+/* Password Input */
+.password-input-wrapper {
   position: relative;
 }
 
-.toggle-password {
+.eye-toggle {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -126,16 +106,47 @@ input:focus {
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 4px;
-  transition: color 0.2s;
 }
 
-.toggle-password:hover {
-  color: #666;
+/* Links */
+.forgot-password-link {
+  text-align: right;
+  margin-bottom: 16px;
 }
 
-/* Buttons & Socials */
-.continue-btn {
+.forgot-password-link span {
+  color: var(--primary-purple);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.forgot-password-link span:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.back-to-login {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.back-to-login span {
+  color: var(--primary-purple);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.back-to-login span:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+/* Buttons */
+.submit-btn {
   width: 100%;
   padding: 14px;
   background-color: var(--primary-purple);
@@ -145,36 +156,22 @@ input:focus {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 8px;
-  transition: all 0.2s ease;
+  transition: background 0.2s;
 }
 
-.continue-btn:hover:not(:disabled) {
+.submit-btn:hover {
   background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(90, 39, 199, 0.3);
 }
 
-.continue-btn:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.continue-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Login Link Styling */
-.login-link {
+/* Register Redirect */
+.register-redirect {
   text-align: center;
   margin-top: 16px;
-  margin-bottom: 20px;
   font-size: 14px;
   color: var(--text-muted);
 }
 
-.link-action {
+.register-redirect .highlight {
   color: var(--primary-purple);
   text-decoration: none;
   font-weight: 700;
@@ -182,19 +179,23 @@ input:focus {
   transition: opacity 0.2s ease;
 }
 
-.link-action:hover {
+.register-redirect .highlight:hover {
   text-decoration: underline;
   opacity: 0.8;
 }
 
-/* Divider */
-.divider {
+/* Social Login */
+.social-login-section {
+  margin-top: 24px;
+}
+
+.login-divider {
   text-align: center;
   margin: 20px 0;
   position: relative;
 }
 
-.divider::before {
+.login-divider::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -204,7 +205,7 @@ input:focus {
   background: var(--border-gray);
 }
 
-.divider span {
+.login-divider span {
   position: relative;
   background: white;
   padding: 0 12px;
@@ -212,9 +213,9 @@ input:focus {
   color: var(--text-muted);
 }
 
-.social-login {
+.social-buttons {
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   gap: 12px;
 }
 
@@ -231,107 +232,36 @@ input:focus {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.social-btn:hover {
-  background: #e9ecef;
-  border-color: var(--border-gray);
-}
-
-.social-btn img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-/* Error States */
-.input-error {
-  border-color: var(--error-red) !important;
-}
-
-.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
-}
-
-.error-text {
-  color: var(--error-red);
-  font-size: 12px;
-  margin-top: 4px;
-  display: block;
-  font-weight: 500;
-}
-
-/* RESPONSIVE DESIGN */
-
+/* Responsive Design */
 @media (max-width: 375px) {
-  .signup-card {
+  .login-card {
     padding: 20px;
   }
   
-  .header h1 {
+  .login-header h1 {
     font-size: 18px;
   }
   
-  .social-login {
-    flex-direction: column; 
-  }
-
-  .logo-img {
-    height: 36px;
-  }
-
-  input:not(.phone-input-field) {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .continue-btn {
-    padding: 12px;
-    font-size: 14px;
+  .social-buttons {
+    flex-direction: column;
   }
 }
 
 @media (min-width: 768px) {
-  .signup-card {
+  .login-card {
     padding: 40px;
     max-width: 500px;
   }
   
-  .header h1 {
+  .login-header h1 {
     font-size: 24px;
-  }
-
-  .logo-img {
-    height: 48px;
-  }
-
-  input:not(.phone-input-field) {
-    padding: 14px 16px;
-  }
-
-  .continue-btn {
-    padding: 16px;
-    font-size: 16px;
   }
 }
 
 @media (min-width: 1440px) {
-  .signup-container {
+  .login-page-container {
     padding: 60px 0;
   }
-}
-
-/* Loading state animation */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.continue-btn:disabled {
-  animation: pulse 1.5s ease-in-out infinite;
 }

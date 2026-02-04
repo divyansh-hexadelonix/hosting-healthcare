@@ -10,6 +10,7 @@
 .main-header {
   background: #ffffff;
   height: 80px;
+  width: auto;
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--border-light);
@@ -34,7 +35,7 @@
 }
 
 .logo-img {
-  height: 45px;
+  height: 5px;
   cursor: pointer;
 }
 
