@@ -38,6 +38,7 @@ const Login: React.FC = () => {
 
     // 2. Combine Hardcoded Mock User with Registered Users
     const allUsers = [
+      ...users,
       {
         name: 'Dr. Craig Thomas',
         email: MOCK_CREDENTIALS.email,
@@ -45,8 +46,7 @@ const Login: React.FC = () => {
         profileImage: 'https://img.freepik.com/free-photo/doctor-smiling-with-stethoscope_1154-36.jpg',
         contactNumber: '000 000 0000',
         medicalLicense: 'A029CJ200'
-      },
-      ...users
+      }
     ];
 
     // 3. Find matching user

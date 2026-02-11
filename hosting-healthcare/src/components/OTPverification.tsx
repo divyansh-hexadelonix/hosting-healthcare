@@ -128,7 +128,13 @@ const OTPVerification: React.FC = () => {
 
       // 2. Save to localStorage "Database"
       const existingUsersStr = localStorage.getItem('hh_users_db');
-      const existingUsers = existingUsersStr ? JSON.parse(existingUsersStr) : [];
+      let existingUsers = [];
+      try {
+        existingUsers = existingUsersStr ? JSON.parse(existingUsersStr) : [];
+        if (!Array.isArray(existingUsers)) existingUsers = [];
+      } catch (error) {
+        existingUsers = [];
+      }
       existingUsers.push(newUser);
       localStorage.setItem('hh_users_db', JSON.stringify(existingUsers));
 
