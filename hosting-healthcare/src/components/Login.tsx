@@ -1,16 +1,19 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './assets/AuthContext';
 import './Login.css';
 import Logo from './assets/logo.png';
 
 type loginScreen = 'login' | 'reset';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [screen, setScreen] = useState<loginScreen>('login');
   const [showPassword, setShowPassword] = useState(false);
   
-  // Mock Credentials
+  // Mock Credentials 
   const MOCK_CREDENTIALS = {
     email: 'test@gmail.com',
     password: 'password123'
@@ -28,8 +31,40 @@ const Login: React.FC = () => {
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
-    if (formData.email === MOCK_CREDENTIALS.email && formData.password === MOCK_CREDENTIALS.password) {
-      alert("Login Successful! Welcome back.");
+
+    // 1. Fetch registered users from "Mock Database" (localStorage)
+    const storedUsers = localStorage.getItem('hh_users_db');
+    const users = storedUsers ? JSON.parse(storedUsers) : [];
+
+    // 2. Combine Hardcoded Mock User with Registered Users
+    const allUsers = [
+      {
+        name: 'Dr. Craig Thomas',
+        email: MOCK_CREDENTIALS.email,
+        password: MOCK_CREDENTIALS.password,
+        profileImage: 'https://img.freepik.com/free-photo/doctor-smiling-with-stethoscope_1154-36.jpg',
+        contactNumber: '000 000 0000',
+        medicalLicense: 'A029CJ200'
+      },
+      ...users
+    ];
+
+    // 3. Find matching user
+    const foundUser = allUsers.find(
+      u => u.email === formData.email && u.password === formData.password
+    );
+
+    if (foundUser) {
+      // 4. Success: Update Global State and Redirect
+      login({
+        name: foundUser.name,
+        email: foundUser.email,
+        profileImage: foundUser.profileImage,
+        contactNumber: foundUser.contactNumber,
+        medicalLicense: foundUser.medicalLicense
+      });
+      alert(`Login Successful! Welcome back, ${foundUser.name}.`);
+      navigate('/'); 
     } else {
       alert("Invalid credentials. Try test@gmail.com / password123");
     }
@@ -133,11 +168,11 @@ const Login: React.FC = () => {
               <span>Or Continue With</span>
             </div>
             <div className="social-buttons">
-              <button className="social-btn">
+              <button className="social-btn" type="button">
                 <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width="18"/> 
                 Google
               </button>
-              <button className="social-btn">
+              <button className="social-btn" type="button">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" width="18"/> 
                 Apple
               </button>

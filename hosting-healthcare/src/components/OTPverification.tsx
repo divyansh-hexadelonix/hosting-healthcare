@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from './assets/AuthContext';
 import './OTPverification.css';
 import Logo from './assets/logo.png';
 
@@ -12,6 +13,7 @@ interface LocationState {
 const OTPVerification: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const state = location.state as LocationState;
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
@@ -96,7 +98,7 @@ const OTPVerification: React.FC = () => {
     }
   };
 
-  // Verify OTP
+  // Verify OTP & CREATE USER
   const handleVerifyOTP = async () => {
     const otpValue = otp.join('');
     
@@ -112,15 +114,36 @@ const OTPVerification: React.FC = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // For demo purposes, accept any 4-digit OTP
-      // In production, you would verify against backend
-      console.log('Verifying OTP:', otpValue);
-      console.log('Phone Number:', state.phoneNumber);
-      console.log('User Data:', state.formData);
+      // --- LOGIC FOR PERSISTENCE ---
+      // 1. Create User Object
+      const newUser = {
+        name: state.formData.name,
+        email: state.formData.email,
+        password: state.formData.password, // Storing for mock login purposes
+        contactNumber: state.formData.contactNumber,
+        medicalLicense: state.formData.licenseNumber,
+        profileImage: "https://img.freepik.com/free-photo/doctor-offering-medical-advice-virtual-appointment_23-2149309824.jpg?w=100", // Default Avatar
+        role: 'user'
+      };
 
-      // Success - navigate to success page or dashboard
-      alert('OTP Verified Successfully! Account created.');
-      navigate('/login');
+      // 2. Save to localStorage "Database"
+      const existingUsersStr = localStorage.getItem('hh_users_db');
+      const existingUsers = existingUsersStr ? JSON.parse(existingUsersStr) : [];
+      existingUsers.push(newUser);
+      localStorage.setItem('hh_users_db', JSON.stringify(existingUsers));
+
+      // 3. Auto Login
+      login({
+        name: newUser.name,
+        email: newUser.email,
+        profileImage: newUser.profileImage,
+        contactNumber: newUser.contactNumber,
+        medicalLicense: newUser.medicalLicense
+      });
+
+      // Success - navigate to home (Header will update automatically)
+      alert('OTP Verified! Account created successfully.');
+      navigate('/');
       
     } catch (err) {
       setError('Invalid OTP. Please try again.');

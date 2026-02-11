@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, UserCircle } from 'lucide-react';
+import { Menu, UserCircle, LogOut, Inbox, Heart, Calendar } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './assets/AuthContext';
 import Logo from './assets/logo.png';
 import './Header.css';
 
 const Header: React.FC = () => {
+  const { user, isAuthenticated, logout } = useAuth(); 
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -18,45 +21,103 @@ const Header: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const handleLogout = () => {
+    logout();
+    setIsDropdownOpen(false);
+    navigate('/login');
+  };
+
+  // Helper to navigate to profile and close menu
+  const goToProfile = () => {
+    navigate('/my-profile');
+    setIsDropdownOpen(false);
+  };
 
   return (
     <header className="main-header">
       <div className="header-container">
-        {/* Logo Section */}
         <div className="header-logo">
-          <img src={Logo} alt="Hosting Healthcare" className="logo-img" />
+          <Link to="/">
+            <img src={Logo} alt="Hosting Healthcare" className="logo-img" />
+          </Link>
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation */}
         <nav className="header-nav">
-          <a href="/" className="nav-item active">Home</a>
-          <a href="/browse" className="nav-item">Browse Stays</a>
-          <a href="/about" className="nav-item">About Us</a>
-          <a href="/contact" className="nav-item">Contact Us</a>
+          <Link to="/" className="nav-item active">Home</Link>
+          <Link to="/browse" className="nav-item">Browse Stays</Link>
+          <Link to="/about" className="nav-item">About Us</Link>
+          <Link to="/contact" className="nav-item">Contact Us</Link>
         </nav>
 
-        {/* Action Buttons */}
+        {/* Actions */}
         <div className="header-actions">
           <button className="list-property-btn">List Your Property</button>
           
           <div className="profile-menu-container" ref={dropdownRef}>
             <button 
               className={`profile-toggle ${isDropdownOpen ? 'active' : ''}`} 
-              onClick={toggleDropdown}
-              aria-expanded={isDropdownOpen}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <Menu size={20} className="menu-icon" />
-              <UserCircle size={32} className="user-icon" />
+              {isAuthenticated && user?.profileImage ? (
+                <img src={user.profileImage} alt="Profile" className="header-avatar-small" />
+              ) : (
+                <UserCircle size={32} className="user-icon" />
+              )}
             </button>
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                <a href="/login" className="dropdown-item">Login</a>
-                <a href="/signup" className="dropdown-item">Signup</a>
-                <div className="dropdown-divider"></div>
-                <a href="/post-property" className="dropdown-item">Post a Property</a>
+                {isAuthenticated && user ? (
+                  // --- LOGGED IN VIEW  ---
+                  <div className="auth-dropdown-content">
+                    {/* ADDED ONCLICK HERE TO NAVIGATE TO PROFILE */}
+                    <div 
+                      className="user-profile-header" 
+                      onClick={goToProfile}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {/* Use uploaded image or fallback */}
+                      <img 
+                        src={user.profileImage || "https://ui-avatars.com/api/?background=random&name=" + user.name} 
+                        alt={user.name} 
+                        className="dropdown-avatar" 
+                      />
+                      <div className="user-details">
+                        <span className="user-name">{user.name}</span>
+                        <span className="user-email">{user.email}</span>
+                      </div>
+                    </div>
+                    
+                    <ul className="dropdown-links">
+                      <li onClick={() => navigate('/bookings')}>
+                        <Calendar size={18} /> My Bookings
+                      </li>
+                      <li onClick={() => navigate('/inbox')}>
+                        <Inbox size={18} /> Inbox
+                      </li>
+                      <li onClick={() => navigate('/wishlist')}>
+                        <Heart size={18} /> Wishlist
+                      </li>
+                    </ul>
+
+                    <div className="dropdown-divider"></div>
+
+                    <div className="sign-out-btn" onClick={handleLogout}>
+                      <LogOut size={18} /> Sign Out
+                    </div>
+                  </div>
+                ) : (
+                  // --- GUEST VIEW ---
+                  <div className="guest-dropdown-content">
+                    <Link to="/login" className="dropdown-item">Login</Link>
+                    <Link to="/signup" className="dropdown-item">Signup</Link>
+                    <div className="dropdown-divider"></div>
+                    <Link to="/post-property" className="dropdown-item">Post a Property</Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
