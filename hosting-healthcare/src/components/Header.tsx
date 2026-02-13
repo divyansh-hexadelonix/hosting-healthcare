@@ -45,7 +45,7 @@ const Header: React.FC = () => {
         {/* Navigation */}
         <nav className="header-nav">
           <Link to="/" className="nav-item active">Home</Link>
-          <Link to="/browse" className="nav-item">Browse Stays</Link>
+          <Link to="/browseStays" className="nav-item">Browse Stays</Link>
           <Link to="/about" className="nav-item">About Us</Link>
           <Link to="/contact" className="nav-item">Contact Us</Link>
         </nav>

@@ -12,6 +12,7 @@ import approveImg from './assets/Approve image.png';
 import earnImg from './assets/Earn image.png';
 import appImg from './assets/Advertisement image.png';
 import { FaSearch } from "react-icons/fa";
+import BrowseStays from './BrowseStays';
 
 
 type Property = {
@@ -58,6 +59,9 @@ const mockDataByCity: { [key: string]: Property[] } = {
       const [loading, setLoading] = useState<boolean>(false)
       const [error, setError] = useState<string | null>(null)
       const [searched, setSearched] = useState<boolean>(false)
+      const [showBrowseStays, setShowBrowseStays] = useState<boolean>(false)
+
+      if (showBrowseStays) return <BrowseStays />
 
   async function fetchProperties(queryCity: string) {
     setLoading(true)
@@ -155,7 +159,7 @@ return (
             <img src={propertyImg} alt="Property" />
           </div>
           <div>
-            <button type="button"  onClick={() => handleSearch()} className="Blue-btn"> View All  → </button>
+            <button type="button" onClick={() => setShowBrowseStays(true)} className="Blue-btn"> View All  → </button>
           </div>
           <div className='Property-text-img'>
             <img src={propertytextImg} alt="Property Text" />
