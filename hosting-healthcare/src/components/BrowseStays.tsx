@@ -1,16 +1,16 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect, MouseEvent } from 'react'
+import { MapPin, Calendar, SlidersHorizontal, Search, X, Building2, Home, Banknote, Users, Star, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './assets/AuthContext';
 import './BrowseStays.css';
-import hotelImg from './assets/hotel-swimming-pool.jpg';
-import villaImg from './assets/Villa image 1.png';
-import swimingpoolImg from './assets/Swiming_Pool_Villa.jpg';
-import whitehouseImg from './assets/White-house-villa-image.png';
-import houseviewImg from './assets/House-View-image.png';
-import hotelviewpointImg from './assets/Hotel View Point.jpg';
-import tropicalbeachresortImg from './assets/Tropical Beach Resort.jpg';
-import sunsethotelImg from './assets/Sunset view hotel.jpg';
+import { propertiesData as properties } from './data/propertiesData';
+
 
 
 function BrowseStays() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, toggleWishlist } = useAuth(); 
+  
   const [location, setLocation] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
@@ -29,9 +29,15 @@ function BrowseStays() {
     family: false,
   });
 
+  const isFilterActive = Object.values(filters).some(value => value === true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const formatDateDisplay = (dateString: string): string => {
     if (!dateString) return '';
-    const [month, day, year] = dateString.split('-');
+    const [year, month, day] = dateString.split('-'); // Standard date input format is YYYY-MM-DD
     return `${month}/${day}/${year}`;
   };
 
@@ -44,41 +50,46 @@ function BrowseStays() {
   };
 
   const handleSearch = (): void => {
-    if (!location || !checkInDate || !checkOutDate) {
-      alert('Please fill in all search fields: Location, Check-in Date, and Check-out Date');
-      return;
-    }
+    // Optional: make search fields required
+    // if (!location) { alert('Please enter a location'); return; }
 
     const searchData = {
       location,
-      checkInDate: formatDateDisplay(checkInDate),
-      checkOutDate: formatDateDisplay(checkOutDate),
+      checkInDate: checkInDate ? formatDateDisplay(checkInDate) : '',
+      checkOutDate: checkOutDate ? formatDateDisplay(checkOutDate) : '',
     };
 
     setSearchParams(searchData);
-    console.log('Search Initiated:', searchData);
   };
 
+  // --- NEW FUNCTION: Handle Wishlist Click ---
+  const handleWishlistClick = (e: MouseEvent, propertyId: number) => {
+    e.stopPropagation(); // Prevents triggering the main card click
+
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      toggleWishlist(propertyId.toString());
+    }
+  };
+
+  // --- UPDATED FUNCTION: Handle Main Card Click ---
   const handlePropertyClick = (property: any): void => {
-    
-    if (!searchParams.location || !searchParams.checkInDate || !searchParams.checkOutDate) {
-      alert('Please search with location and dates first');
+    if (!isAuthenticated) {
+      navigate('/login');
       return;
     }
 
-    const bookingData = {
-      property: property.hotelName,
-      propertyId: property.id,
-      propertyType: property.type,
-      location: searchParams.location,
-      checkInDate: searchParams.checkInDate,
-      checkOutDate: searchParams.checkOutDate,
-      price: property.price,
-      rating: property.rating,
-      reviews: property.reviews,
-    };
-
-    console.log('Property Selected for Booking:', bookingData);
+    // Navigate to stay details page with data
+    navigate('/stay-details', {
+      state: {
+        propertyId: property.id,
+        // Pass other relevant data if needed by the details page quickly
+        // propertyData: property 
+      }
+    });
+    
+    console.log('Navigating to details for:', property.hotelName);
   };
 
   const handleFilterToggle = (): void => {
@@ -88,30 +99,16 @@ function BrowseStays() {
   const handleFilterCheckboxChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, checked } = e.target;
     
-    
     if (name === 'priceBelow' && checked) {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        priceBelow: true,
-        priceAbove: false,
-      }));
+      setFilters(prevFilters => ({ ...prevFilters, priceBelow: true, priceAbove: false }));
     } else if (name === 'priceAbove' && checked) {
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        priceBelow: false,
-        priceAbove: true,
-      }));
+      setFilters(prevFilters => ({ ...prevFilters, priceBelow: false, priceAbove: true }));
     } else {
-      
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        [name]: checked
-      }));
+      setFilters(prevFilters => ({ ...prevFilters, [name]: checked }));
     }
   };
 
   const applyFilters = (): void => {
-    console.log('Filters applied:', filters);
     setShowFilterModal(false);
   };
 
@@ -126,165 +123,18 @@ function BrowseStays() {
     });
   };
 
-  const properties = [
-    {
-      id: 1,
-      image: hotelviewpointImg,
-      city: 'Pune',
-      hotelName: 'Luxury Hill Resort',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 428,
-      rating: 4.8,
-      price: '₹5,000',
-      type: 'hotel',
-    },
-    {
-      id: 2,
-      image: whitehouseImg,
-      city: 'Mumbai',
-      hotelName: 'Sea View Mansion',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 612,
-      rating: 4.9,
-      price: '₹3,500',
-      type: 'hotel',
-    },
-    {
-      id: 3,
-      image: villaImg,
-      city: 'Hyderabad',
-      hotelName: 'Charming Heritage Villa',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 356,
-      rating: 4.7,
-      price: '₹6,499',
-      type: 'villa',
-    },
-    {
-      id: 4,
-      image: houseviewImg,
-      city: 'Bangalore',
-      hotelName: 'Modern Tech Hub Stay',
-      capacity: 'Family',
-      available: true,
-      reviews: 289,
-      rating: 4.6,
-      price: '₹4,000',
-      type: 'hotel',
-    },
-    {
-      id: 5,
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&h=400&fit=crop',
-      city: 'Delhi',
-      hotelName: 'Royal Palace Hotel',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 721,
-      rating: 4.8,
-      price: '₹5,000',
-      type: 'hotel',
-    },
-    {
-      id: 6,
-      image: swimingpoolImg,
-      city: 'Pune',
-      hotelName: 'Green Valley Retreat',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 445,
-      rating: 4.7,
-      price: '₹6,000',
-      type: 'villa',
-    },
-    {
-      id: 7,
-      image: tropicalbeachresortImg,
-      city: 'Mumbai',
-      hotelName: 'Beachfront Paradise',
-      capacity: 'Couples',
-      available: true,
-      reviews: 834,
-      rating: 4.9,
-      price: '₹7,500',
-      type: 'hotel',
-    },
-    {
-      id: 8,
-      image: hotelImg,
-      city: 'Bangalore',
-      hotelName: 'Elegant Garden Suite',
-      capacity: 'Couples & Family',
-      available: false,
-      reviews: 567,
-      rating: 4.8,
-      price: '₹4,800',
-      type: 'villa',
-    },
-    {
-      id: 9,
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&h=400&fit=crop',
-      city: 'Hyderabad',
-      hotelName: 'White House Park Stay Inn',
-      capacity: 'Family',
-      available: true,
-      reviews: 392,
-      rating: 4.7,
-      price: '₹3,000',
-      type: 'hotel',
-    },
-    {
-      id: 10,
-      image: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?w=500&h=400&fit=crop',
-      city: 'Delhi',
-      hotelName: 'Contemporary Loft',
-      capacity: 'Couples',
-      available: false,
-      reviews: 276,
-      rating: 4.5,
-      price: '₹4,200',
-      type: 'hotel',
-    },
-    {
-      id: 11,
-      image: sunsethotelImg,
-      city: 'Goa, Vagator',
-      hotelName: 'Sunset Valley, Villa',
-      capacity: 'Couples & Family',
-      available: true,
-      reviews: 503,
-      rating: 4.8,
-      price: '₹8,000',
-      type: 'villa',
-    },
-    {
-      id: 12,
-      image: whitehouseImg,
-      city: 'Bangalore',
-      hotelName: 'Premium Downtown Hotel',
-      capacity: 'Family',
-      available: true,
-      reviews: 618,
-      rating: 4.7,
-      price: '₹5,200',
-      type: 'hotel',
-    },
-  ];
 
-    const filteredProperties = properties.filter((property) => {
-
+  const filteredProperties = properties.filter((property) => {
+    // Location Filtering
     const cityMatch = searchParams.location 
       ? property.city.toLowerCase().includes(searchParams.location.toLowerCase())
       : true;
 
     if (!cityMatch) return false;
 
-    // If no filters are selected, show all properties matching the city
+    // Check Filters
     const hasFilters = Object.values(filters).some(value => value);
     if (!hasFilters) return true;
-
     
     const typeMatch = 
       (filters.hotel && property.type === 'hotel') ||
@@ -298,24 +148,20 @@ function BrowseStays() {
 
     const priceValue = parseInt(property.price.replace(/[₹,]/g, ''));
     let priceMatch = true;
-    
-    if (filters.priceBelow) {
-      priceMatch = priceValue <= 5000;
-    } else if (filters.priceAbove) {
-      priceMatch = priceValue >= 5000;
-    }
+    if (filters.priceBelow) priceMatch = priceValue <= 5000;
+    else if (filters.priceAbove) priceMatch = priceValue >= 5000;
 
     return typeMatch && capacityMatch && priceMatch;
   });
 
   return (
     <div className='browse-container'>
-  
-      <div className='search-bar-section'>
+      {/* ... Search Bar Section (Unchanged) ... */}
+       <div className='search-bar-section'>
         <div className='search-bar-wrapper'>
 
           <div className='search-input-group'>
-            <label className='search-label'>Where are you going ?🏰</label>
+            <label className='search-label'>Where are you going ? <MapPin size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /></label>
             <input
               type='text'
               className='search-input'
@@ -335,7 +181,7 @@ function BrowseStays() {
                 value={checkInDate}
                 onChange={handleCheckInDateChange}
               />
-              <span className='calendar-icon'>📅</span>
+              <span className='calendar-icon'><Calendar size={18} /></span>
             </div>
           </div>
 
@@ -349,26 +195,30 @@ function BrowseStays() {
                 value={checkOutDate}
                 onChange={handleCheckOutDateChange}
               />
-              <span className='calendar-icon'>📅</span>
+              <span className='calendar-icon'><Calendar size={18} /></span>
             </div>
           </div>
 
-          <button className='filter-btn' onClick={handleFilterToggle}>
-            ⚙️ Filter
+          <button 
+            className={`filter-btn ${isFilterActive ? 'active' : ''}`} 
+            onClick={handleFilterToggle}
+          >
+            <SlidersHorizontal size={18} /> Filter
           </button>
 
           <button className='search-btn' onClick={handleSearch}>
-            🔍︎ Search
+            <Search size={18} /> Search
           </button>
         </div>
       </div>
 
-      {showFilterModal && (
+      {/* ... Filter Modal (Unchanged) ... */}
+       {showFilterModal && (
         <div className='filter-modal-overlay' onClick={() => setShowFilterModal(false)}>
           <div className='filter-modal' onClick={(e) => e.stopPropagation()}>
             <div className='filter-modal-header'>
               <h2>Filter Stays</h2>
-              <button className='close-btn' onClick={() => setShowFilterModal(false)}>✕</button>
+              <button className='close-btn' onClick={() => setShowFilterModal(false)}><X size={24} /></button>
             </div>
 
             <div className='filter-modal-content'>
@@ -383,7 +233,7 @@ function BrowseStays() {
                       checked={filters.hotel}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>🏨 Hotels</span>
+                    <span><Building2 size={16} /> Hotels</span>
                   </label>
                   <label className='checkbox-label'>
                     <input
@@ -392,7 +242,7 @@ function BrowseStays() {
                       checked={filters.villa}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>🏰 Villa</span>
+                    <span><Home size={16} /> Villa</span>
                   </label>
                 </div>
               </div>
@@ -408,7 +258,7 @@ function BrowseStays() {
                       checked={filters.priceBelow}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>💰 Below ₹5,000</span>
+                    <span><Banknote size={16} /> Below ₹5,000</span>
                   </label>
 
                   <label className='checkbox-label'>
@@ -418,7 +268,7 @@ function BrowseStays() {
                       checked={filters.priceAbove}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>💰 Above ₹5,000</span>
+                    <span><Banknote size={16} /> Above ₹5,000</span>
                   </label>
                 </div>
               </div>
@@ -433,7 +283,7 @@ function BrowseStays() {
                       checked={filters.couples}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>👫 Couples</span>
+                    <span><Users size={16} /> Couples</span>
                   </label>
                   <label className='checkbox-label'>
                     <input
@@ -442,7 +292,7 @@ function BrowseStays() {
                       checked={filters.family}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span>👨‍👩‍👧‍👦 Family</span>
+                    <span><Users size={16} /> Family</span>
                   </label>
                 </div>
               </div>
@@ -465,18 +315,24 @@ function BrowseStays() {
         <p>Discover the perfect accommodation for your next getaway</p>
       </div>
 
+      {/* ... Search Info Bar (Unchanged) ... */}
       {searchParams.location && (
         <div className='search-info-bar'>
           <div className='search-info-content'>
             <span className='search-info-item'>
               <strong>Location:</strong> {searchParams.location}
             </span>
-            <span className='search-info-item'>
-              <strong>Check-in:</strong> {searchParams.checkInDate}
-            </span>
+            {/* Only show dates if selected */}
+            {searchParams.checkInDate && (
+               <span className='search-info-item'>
+               <strong>Check-in:</strong> {searchParams.checkInDate}
+             </span>
+            )}
+             {searchParams.checkOutDate && (
             <span className='search-info-item'>
               <strong>Check-out:</strong> {searchParams.checkOutDate}
             </span>
+             )}
             <button className='clear-search-btn' onClick={() => {
               setSearchParams({ location: '', checkInDate: '', checkOutDate: '' });
               setLocation('');
@@ -489,9 +345,14 @@ function BrowseStays() {
         </div>
       )}
 
+      {/* === UPDATED PROPERTIES GRID === */}
       {filteredProperties.length > 0 ? (
         <div className='properties-grid'>
-          {filteredProperties.map((property) => (
+          {filteredProperties.map((property) => {
+             // Check if this property is in the logged-in user's wishlist
+             const isWishlisted = user?.wishlist?.includes(property.id.toString());
+
+             return (
             <div 
               key={property.id} 
               className='property-card'
@@ -503,79 +364,75 @@ function BrowseStays() {
                   alt={property.hotelName}
                   className='property-image'
                 />
-                <div className='property-badge'>
-                  {property.available ? (
-                    <span className='available'>Available</span>
-                  ) : (
-                    <span className='booked'>Booked</span>
-                  )}
-                </div>
+                {/* Removed Badge */}
+                
+                {/* Added Wishlist Heart Button */}
+                <button 
+                  className="wishlist-button"
+                  onClick={(e) => handleWishlistClick(e, property.id)}
+                >
+                  <Heart 
+                    size={24} 
+                    color={isWishlisted ? "#FF385C" : "white"} 
+                    fill={isWishlisted ? "#FF385C" : "rgba(0,0,0,0.5)"} 
+                    strokeWidth={1.5}
+                  />
+                </button>
               </div>
 
               <div className='property-content'>
-                <h3 className='property-title'>{property.hotelName}</h3>
+                {/* Re-arranged content for cleaner look */}
+                <div className="property-header-row">
+                   <h3 className='property-title'>{property.hotelName}</h3>
+                   <div className='price-container-inline'>
+                      <span className='price-amount'>{property.price}</span>
+                      <span className='price-label'>/night</span>
+                   </div>
+                </div>
                 
                 <div className='property-location'>
-                  <span className='city-badge'>{property.city}</span>
+                  <MapPin size={14} color="#777" />
+                  <span className='city-text'>{property.city}</span>
                 </div>
 
-                <div className='property-meta'>
-                  <div className='meta-item'>
-                    <span className='meta-label'>Guests:</span>
-                    <span className='meta-value'>{property.capacity}</span>
-                  </div>
-                </div>
+                 <div className='property-meta'>
+                   <span className='meta-value'>{property.capacity}</span>
+                 </div>
 
                 <div className='rating-review-container'>
                   <div className='property-rating'>
-                    <span className='star'>★</span>
+                    <span className='star'><Star size={14} fill="currentColor" /></span>
                     <span className='rating-value'>{property.rating}</span>
                   </div>
+                  <span className='reviews-dot'>•</span>
                   <div className='property-reviews'>
-                    <span className='reviews-count'>({property.reviews} reviews)</span>
+                    <span className='reviews-count'>{property.reviews} reviews</span>
                   </div>
                 </div>
 
-                <div className='property-footer'>
-                  <div className='price-container'>
-                    <span className='price-label'>Per Night:</span>
-                    <span className='price-amount'>{property.price}</span>
-                  </div>
-                  <button 
-                    className='pre-book-btn'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePropertyClick(property);
-                    }}
-                  >
-                    Pre-Book
-                  </button>
-                </div>
+                {/* Removed Footer and Pre-book button */}
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       ) : (
-        <div className='no-data-container'>
-          <div className='no-data-message'>
+        <div className='no-data-container' style={{textAlign: 'center', padding: '40px'}}>
             <h2>No Properties Found</h2>
-            <p>
-              {searchParams.location 
-                ? `Sorry, we couldn't find any properties in ${searchParams.location}.`
-                : 'Please search with a location and dates to see available properties.'}
-            </p>
+            <p>Try adjusting your search or filters.</p>
             <button 
-              className='new-search-btn'
+              className='new-search-btn clear-search-btn' // reusing style
+              style={{margin: '20px auto', display: 'block'}}
               onClick={() => {
                 setSearchParams({ location: '', checkInDate: '', checkOutDate: '' });
                 setLocation('');
                 setCheckInDate('');
                 setCheckOutDate('');
+                clearFilters();
               }}
             >
-              Try New Search
+              Show All Properties
             </button>
-          </div>
         </div>
       )}
     </div>

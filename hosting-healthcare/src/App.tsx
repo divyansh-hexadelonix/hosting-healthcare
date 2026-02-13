@@ -9,7 +9,7 @@ import Login from './components/Login';
 import OTPVerification from './components/OTPverification';
 import { AuthProvider } from './components/assets/AuthContext';
 import MyProfile from './components/myProfile';
-
+import Wishlist from './components/Wishlist';
 
 function App() {
   return (
@@ -23,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/otp-verification" element={<OTPVerification />}/>
           <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           {/* Other routes can be added here */}
         </Routes>
         <Footer/>

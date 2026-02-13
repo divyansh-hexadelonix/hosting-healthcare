@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, UserCircle, LogOut, Inbox, Heart, Calendar } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './assets/AuthContext';
 import Logo from './assets/logo.png';
 import './Header.css';
@@ -8,6 +8,7 @@ import './Header.css';
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth(); 
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location path
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +34,11 @@ const Header: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
+  // Helper to determine active class
+  const getNavLinkClass = (path: string) => {
+    return location.pathname === path ? "nav-item active" : "nav-item";
+  };
+
   return (
     <header className="main-header">
       <div className="header-container">
@@ -44,10 +50,10 @@ const Header: React.FC = () => {
 
         {/* Navigation */}
         <nav className="header-nav">
-          <Link to="/" className="nav-item active">Home</Link>
-          <Link to="/browseStays" className="nav-item">Browse Stays</Link>
-          <Link to="/about" className="nav-item">About Us</Link>
-          <Link to="/contact" className="nav-item">Contact Us</Link>
+          <Link to="/" className={getNavLinkClass('/')}>Home</Link>
+          <Link to="/browseStays" className={getNavLinkClass('/browseStays')}>Browse Stays</Link>
+          <Link to="/about" className={getNavLinkClass('/about')}>About Us</Link>
+          <Link to="/contact" className={getNavLinkClass('/contact')}>Contact Us</Link>
         </nav>
 
         {/* Actions */}
