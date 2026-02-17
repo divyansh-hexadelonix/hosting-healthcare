@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MapPin, Star, Frown } from 'lucide-react';
 import { useAuth } from './assets/AuthContext';
@@ -8,6 +8,19 @@ import './Wishlist.css';
 const Wishlist: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, toggleWishlist } = useAuth();
+
+  const [localReviews, setLocalReviews] = useState<Record<string, any[]>>({});
+
+  useEffect(() => {
+    const savedReviews = localStorage.getItem('hh_reviews');
+    if (savedReviews) {
+      try {
+        setLocalReviews(JSON.parse(savedReviews));
+      } catch (error) {
+        console.error("Failed to parse reviews from local storage", error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -43,7 +56,14 @@ const Wishlist: React.FC = () => {
         <div className="wishlist-content-body">
           {wishlistedProperties.length > 0 ? (
             <div className="wishlist-grid">
-              {wishlistedProperties.map((property) => (
+              {wishlistedProperties.map((property) => {
+                // Calculate dynamic rating
+                const propertyReviews = localReviews[property.id] || [];
+                const allReviews = [...propertyReviews, ...(property.reviewsList || [])];
+                const totalRating = allReviews.reduce((acc, r) => acc + r.rating, 0);
+                const avgRating = allReviews.length > 0 ? (totalRating / allReviews.length).toFixed(1) : property.rating;
+                const reviewCount = allReviews.length > 0 ? allReviews.length : property.reviews;
+                return (
                 <div
                   key={property.id}
                   className="wishlist-card"
@@ -90,14 +110,14 @@ const Wishlist: React.FC = () => {
                     <div className="wishlist-rating-row">
                       <div className="wishlist-rating">
                         <Star size={14} fill="#ff9f00" color="#ff9f00" />
-                        <span className="rating-val">{property.rating}</span>
+                        <span className="rating-val">{avgRating}</span>
                       </div>
                       <span className="dot">•</span>
-                      <span className="review-txt">{property.reviews} reviews</span>
+                      <span className="review-txt">{reviewCount} reviews</span>
                     </div>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           ) : (
 

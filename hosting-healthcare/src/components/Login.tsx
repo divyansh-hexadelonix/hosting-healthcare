@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './assets/AuthContext';
@@ -36,6 +36,9 @@ const Login: React.FC = () => {
     const storedUsers = localStorage.getItem('hh_users_db');
     const users = storedUsers ? JSON.parse(storedUsers) : [];
 
+    // Check if mock user data exists in DB to merge persistence
+    const persistedMockUser = users.find((u: any) => u.email === MOCK_CREDENTIALS.email);
+
     // 2. Combine Hardcoded Mock User with Registered Users
     const allUsers = [
       ...users,
@@ -45,7 +48,11 @@ const Login: React.FC = () => {
         password: MOCK_CREDENTIALS.password,
         profileImage: 'https://img.freepik.com/free-photo/doctor-smiling-with-stethoscope_1154-36.jpg',
         contactNumber: '000 000 0000',
-        medicalLicense: 'A029CJ200'
+        medicalLicense: 'A029CJ200',
+        // Merge persisted data if available
+        wishlist: persistedMockUser?.wishlist || [],
+        sentRequests: persistedMockUser?.sentRequests || [],
+        cancelledRequests: persistedMockUser?.cancelledRequests || []
       }
     ];
 
@@ -61,7 +68,10 @@ const Login: React.FC = () => {
         email: foundUser.email,
         profileImage: foundUser.profileImage,
         contactNumber: foundUser.contactNumber,
-        medicalLicense: foundUser.medicalLicense
+        medicalLicense: foundUser.medicalLicense,
+        wishlist: foundUser.wishlist || [],
+        sentRequests: foundUser.sentRequests || [],
+        cancelledRequests: foundUser.cancelledRequests || []
       });
       alert(`Login Successful! Welcome back, ${foundUser.name}.`);
       navigate('/'); 
@@ -75,6 +85,10 @@ const Login: React.FC = () => {
     alert(`A password reset link has been sent to ${formData.email}`);
     setScreen('login');
   };
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   return (
     <div className="login-page-container">

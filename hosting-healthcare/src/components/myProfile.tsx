@@ -17,6 +17,10 @@ const MyProfile: React.FC = () => {
   });
 
   useEffect(() => {
+          window.scrollTo(0, 0);
+        }, []);
+
+  useEffect(() => {
     if (user) {
       setFormData(prev => ({
         ...prev,

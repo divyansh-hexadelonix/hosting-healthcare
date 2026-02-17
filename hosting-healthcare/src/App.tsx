@@ -10,6 +10,9 @@ import OTPVerification from './components/OTPverification';
 import { AuthProvider } from './components/assets/AuthContext';
 import MyProfile from './components/myProfile';
 import Wishlist from './components/Wishlist';
+import StayDetails from './components/StayDetails/StayDetails';
+import Gallery from './components/StayDetails/Gallery';
+import MyBookings from './components/MyBookings';
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
           <Route path="/otp-verification" element={<OTPVerification />}/>
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/stay-details" element={<StayDetails />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           {/* Other routes can be added here */}
         </Routes>
         <Footer/>

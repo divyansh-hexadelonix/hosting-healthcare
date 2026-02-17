@@ -6,7 +6,6 @@ import './BrowseStays.css';
 import { propertiesData as properties } from './data/propertiesData';
 
 
-
 function BrowseStays() {
   const navigate = useNavigate();
   const { user, isAuthenticated, toggleWishlist } = useAuth(); 
@@ -29,10 +28,20 @@ function BrowseStays() {
     family: false,
   });
 
+  const [localReviews, setLocalReviews] = useState<Record<string, any[]>>({});
+
   const isFilterActive = Object.values(filters).some(value => value === true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const savedReviews = localStorage.getItem('hh_reviews');
+    if (savedReviews) {
+      try {
+        setLocalReviews(JSON.parse(savedReviews));
+      } catch (error) {
+        console.error("Failed to parse reviews from local storage", error);
+      }
+    }
   }, []);
 
   const formatDateDisplay = (dateString: string): string => {
@@ -258,7 +267,7 @@ function BrowseStays() {
                       checked={filters.priceBelow}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span><Banknote size={16} /> Below ₹5,000</span>
+                    <span><Banknote size={16} /> Below $5,000</span>
                   </label>
 
                   <label className='checkbox-label'>
@@ -268,7 +277,7 @@ function BrowseStays() {
                       checked={filters.priceAbove}
                       onChange={handleFilterCheckboxChange}
                     />
-                    <span><Banknote size={16} /> Above ₹5,000</span>
+                    <span><Banknote size={16} /> Above $5,000</span>
                   </label>
                 </div>
               </div>
@@ -352,6 +361,13 @@ function BrowseStays() {
              // Check if this property is in the logged-in user's wishlist
              const isWishlisted = user?.wishlist?.includes(property.id.toString());
 
+             // Calculate dynamic rating and reviews count
+             const propertyReviews = localReviews[property.id] || [];
+             const allReviews = [...propertyReviews, ...(property.reviewsList || [])];
+             const totalRating = allReviews.reduce((acc, r) => acc + r.rating, 0);
+             const avgRating = allReviews.length > 0 ? (totalRating / allReviews.length).toFixed(1) : property.rating;
+             const reviewCount = allReviews.length > 0 ? allReviews.length : property.reviews;
+
              return (
             <div 
               key={property.id} 
@@ -373,8 +389,8 @@ function BrowseStays() {
                 >
                   <Heart 
                     size={24} 
-                    color={isWishlisted ? "#FF385C" : "white"} 
-                    fill={isWishlisted ? "#FF385C" : "rgba(0,0,0,0.5)"} 
+                    color={isWishlisted ? "#FF385C" : "#333"} 
+                    fill={isWishlisted ? "#FF385C" : "transparent"} 
                     strokeWidth={1.5}
                   />
                 </button>
@@ -402,11 +418,11 @@ function BrowseStays() {
                 <div className='rating-review-container'>
                   <div className='property-rating'>
                     <span className='star'><Star size={14} fill="currentColor" /></span>
-                    <span className='rating-value'>{property.rating}</span>
+                    <span className='rating-value'>{avgRating}</span>
                   </div>
                   <span className='reviews-dot'>•</span>
                   <div className='property-reviews'>
-                    <span className='reviews-count'>{property.reviews} reviews</span>
+                    <span className='reviews-count'>{reviewCount} reviews</span>
                   </div>
                 </div>
 

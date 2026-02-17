@@ -183,6 +183,10 @@ const OTPVerification: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
   return (
     <div className="otp-container">
       <div className="otp-card">

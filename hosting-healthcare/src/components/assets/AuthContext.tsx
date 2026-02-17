@@ -1,13 +1,28 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-// Define the User shape matches your requirements
+export interface BookingRequest {
+  bookingId: string;
+  propertyId: number;
+  hotelName: string;
+  image: string;
+  city: string;
+  checkInDate: string;
+  checkOutDate: string;
+  status: 'Pending' | 'Cancelled';
+  requestDate: string;
+  price: string | number;
+}
+
+// Updated User interface
 export interface User {
   name: string;
   email: string;
   profileImage?: string;
   contactNumber?: string;
   medicalLicense?: string;
-  wishlist?: string[]; 
+  wishlist?: string[];
+  sentRequests?: BookingRequest[];
+  cancelledRequests?: BookingRequest[];
 }
 
 interface AuthContextType {
@@ -15,92 +30,140 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  toggleWishlist: (propertyId: string) => void; 
+  toggleWishlist: (propertyId: string) => void;
+  sendBookingRequest: (request: Omit<BookingRequest, 'bookingId' | 'status' | 'requestDate'>) => void;
+  withdrawBookingRequest: (bookingId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  // 1. On load, check if user is already logged in (Persistent State)
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        return JSON.parse(storedUser);
       } catch (error) {
         console.error("Failed to parse user from local storage", error);
+        localStorage.removeItem('currentUser');
+        return null;
       }
     }
-  }, []);
+    return null;
+  });
 
-  // 2. Login function: Updates state and saves to local storage
-  const login = (userData: User) => {
-    // Ensure wishlist exists on login (default to empty array if missing)
-    const userWithWishlist = { wishlist: [], ...userData };
-    
-    setUser(userWithWishlist);
-    localStorage.setItem('currentUser', JSON.stringify(userWithWishlist));
+  // Helper to update local storage and main DB simulation
+  const updatePersistentStorage = (updatedUser: User) => {
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    try {
+      const dbUsersStr = localStorage.getItem('hh_users_db');
+      const dbUsers: any[] = dbUsersStr ? JSON.parse(dbUsersStr) : [];
+      const userIndex = dbUsers.findIndex((u: any) => u.email === updatedUser.email);
+      if (userIndex !== -1) {
+        dbUsers[userIndex] = { ...dbUsers[userIndex], ...updatedUser };
+      } else {
+        dbUsers.push(updatedUser);
+      }
+      localStorage.setItem('hh_users_db', JSON.stringify(dbUsers));
+    } catch (e) {
+      console.error("Failed to update user db storage", e);
+    }
   };
 
-  // 3. Logout function: Clears state and local storage
+  // 2. Login
+  const login = (userData: User) => {
+    const userWithData = { 
+        wishlist: [], 
+        sentRequests: [], 
+        cancelledRequests: [], 
+        ...userData 
+    };
+    setUser(userWithData);
+    localStorage.setItem('currentUser', JSON.stringify(userWithData));
+  };
+
+  // 3. Logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem('currentUser');
   };
 
-  // --- ADDED: Toggle Wishlist Function (Persists to main DB) ---
+  // 4. Toggle Wishlist
   const toggleWishlist = (propertyId: string) => {
-    if (!user || !user.email) return;
-
+    if (!user) return;
     setUser((prevUser) => {
       if (!prevUser) return null;
-
       const currentWishlist = prevUser.wishlist || [];
       let updatedWishlist: string[];
-
       if (currentWishlist.includes(propertyId)) {
-        // Remove if exists
         updatedWishlist = currentWishlist.filter(id => id !== propertyId);
       } else {
-        // Add if doesn't exist
         updatedWishlist = [...currentWishlist, propertyId];
       }
-
       const updatedUser = { ...prevUser, wishlist: updatedWishlist };
-
-      // A. Update current session storage immediately
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-
-      // B. Update the main "database" (hh_users_db) so it persists after logout/login
-      try {
-        const dbUsersStr = localStorage.getItem('hh_users_db');
-        if (dbUsersStr) {
-          const dbUsers: any[] = JSON.parse(dbUsersStr);
-          const userIndex = dbUsers.findIndex((u: any) => u.email === prevUser.email);
-          
-          if (userIndex !== -1) {
-            dbUsers[userIndex] = { ...dbUsers[userIndex], wishlist: updatedWishlist };
-            localStorage.setItem('hh_users_db', JSON.stringify(dbUsers));
-          }
-        }
-      } catch (e) {
-        console.error("Failed to update user db storage", e);
-      }
-
+      updatePersistentStorage(updatedUser);
       return updatedUser;
     });
   };
 
+  // --- 5. NEW: Send Booking Request ---
+  const sendBookingRequest = (requestData: Omit<BookingRequest, 'bookingId' | 'status' | 'requestDate'>) => {
+    if (!user) return;
+    
+    const newRequest: BookingRequest = {
+        ...requestData,
+        bookingId: 'BK-' + Date.now().toString().slice(-6), // Generate simple unique ID
+        status: 'Pending',
+        requestDate: new Date().toLocaleDateString()
+    };
+
+    setUser((prevUser) => {
+        if (!prevUser) return null;
+        const updatedRequests = [newRequest, ...(prevUser.sentRequests || [])];
+        const updatedUser = { ...prevUser, sentRequests: updatedRequests };
+        updatePersistentStorage(updatedUser);
+        return updatedUser;
+    });
+  };
+
+  // --- 6. NEW: Withdraw Booking Request ---
+  const withdrawBookingRequest = (bookingId: string) => {
+      if (!user) return;
+
+      setUser((prevUser) => {
+          if (!prevUser || !prevUser.sentRequests) return prevUser;
+
+          // Find the request to cancel
+          const requestToCancel = prevUser.sentRequests.find(req => req.bookingId === bookingId);
+          if (!requestToCancel) return prevUser;
+
+          // Create updated cancelled request object
+          const cancelledRequest: BookingRequest = { ...requestToCancel, status: 'Cancelled' };
+
+          // Filter out from sent requests
+          const updatedSentRequests = prevUser.sentRequests.filter(req => req.bookingId !== bookingId);
+          
+          // Add to cancelled requests
+          const updatedCancelledRequests = [cancelledRequest, ...(prevUser.cancelledRequests || [])];
+
+          const updatedUser = { 
+              ...prevUser, 
+              sentRequests: updatedSentRequests,
+              cancelledRequests: updatedCancelledRequests
+          };
+          
+          updatePersistentStorage(updatedUser);
+          return updatedUser;
+      });
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, toggleWishlist }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, toggleWishlist, sendBookingRequest, withdrawBookingRequest }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook for easy access
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");

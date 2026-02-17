@@ -7,6 +7,15 @@ import hotelviewpointImg from '../assets/Hotel View Point.jpg';
 import tropicalbeachresortImg from '../assets/Tropical Beach Resort.jpg';
 import sunsethotelImg from '../assets/Sunset view hotel.jpg';
 
+export interface ReviewType {
+  id: number;
+  name: string;
+  rating: number;
+  date: string;
+  text: string;
+  img: string;
+}
+
 export interface PropertyDataType {
   id: number;
   image: string;
@@ -18,7 +27,15 @@ export interface PropertyDataType {
   rating: number;
   price: string;
   type: string;
+  reviewsList: ReviewType[];
 }
+
+const MOCK_REVIEWS: ReviewType[] = [
+  { id: 1, name: "Maria Scholes", rating: 4.0, date: "Oct 2023", text: "Madona was incredibly insightful and accurate! His reading gave me so much clarity, and I feel more at peace now. Highly recommend!", img: "https://randomuser.me/api/portraits/women/44.jpg" },
+  { id: 2, name: "John Doe", rating: 5.0, date: "Sep 2023", text: "Great location and amazing host. The place was sparkling clean and exactly as described.", img: "https://randomuser.me/api/portraits/men/32.jpg" },
+  { id: 3, name: "Sarah Smith", rating: 4.5, date: "Aug 2023", text: "Lovely stay. Very quiet neighborhood and close to shops.", img: "https://randomuser.me/api/portraits/women/68.jpg" },
+  { id: 4, name: "Mike Ross", rating: 4.0, date: "Jul 2023", text: "Good value for money. Would definitely stay again.", img: "https://randomuser.me/api/portraits/men/85.jpg" },
+];
 
 export const propertiesData: PropertyDataType[] = [
      {
@@ -30,8 +47,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 428,
       rating: 4.8,
-      price: '₹5,000',
+      price: '$5,000',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 2,
@@ -42,8 +60,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 612,
       rating: 4.9,
-      price: '₹3,500',
+      price: '$3,500',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 3,
@@ -54,8 +73,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 356,
       rating: 4.7,
-      price: '₹6,499',
+      price: '$6,499',
       type: 'villa',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 4,
@@ -66,8 +86,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 289,
       rating: 4.6,
-      price: '₹4,000',
+      price: '$4,000',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 5,
@@ -78,8 +99,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 721,
       rating: 4.8,
-      price: '₹5,000',
+      price: '$5,000',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 6,
@@ -90,8 +112,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 445,
       rating: 4.7,
-      price: '₹6,000',
+      price: '$6,000',
       type: 'villa',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 7,
@@ -102,8 +125,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 834,
       rating: 4.9,
-      price: '₹7,500',
+      price: '$7,500',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 8,
@@ -114,8 +138,9 @@ export const propertiesData: PropertyDataType[] = [
       available: false,
       reviews: 567,
       rating: 4.8,
-      price: '₹4,800',
+      price: '$4,800',
       type: 'villa',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 9,
@@ -126,8 +151,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 392,
       rating: 4.7,
-      price: '₹3,000',
+      price: '$3,000',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 10,
@@ -138,8 +164,9 @@ export const propertiesData: PropertyDataType[] = [
       available: false,
       reviews: 276,
       rating: 4.5,
-      price: '₹4,200',
+      price: '$4,200',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 11,
@@ -150,8 +177,9 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 503,
       rating: 4.8,
-      price: '₹8,000',
+      price: '$8,000',
       type: 'villa',
+      reviewsList: MOCK_REVIEWS,
     },
     {
       id: 12,
@@ -162,7 +190,8 @@ export const propertiesData: PropertyDataType[] = [
       available: true,
       reviews: 618,
       rating: 4.7,
-      price: '₹5,200',
+      price: '$5,200',
       type: 'hotel',
+      reviewsList: MOCK_REVIEWS,
     },
 ];

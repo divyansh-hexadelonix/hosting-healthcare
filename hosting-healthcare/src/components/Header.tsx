@@ -8,7 +8,7 @@ import './Header.css';
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth(); 
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location path
+  const location = useLocation(); 
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +79,6 @@ const Header: React.FC = () => {
                 {isAuthenticated && user ? (
                   // --- LOGGED IN VIEW  ---
                   <div className="auth-dropdown-content">
-                    {/* ADDED ONCLICK HERE TO NAVIGATE TO PROFILE */}
                     <div 
                       className="user-profile-header" 
                       onClick={goToProfile}
@@ -98,7 +97,7 @@ const Header: React.FC = () => {
                     </div>
                     
                     <ul className="dropdown-links">
-                      <li onClick={() => navigate('/bookings')}>
+                      <li onClick={() => navigate('/my-bookings')}>
                         <Calendar size={18} /> My Bookings
                       </li>
                       <li onClick={() => navigate('/inbox')}>
