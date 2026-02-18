@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from './assets/AuthContext';
+import { useAuth } from '../assets/AuthContext';
 import { Edit2,Monitor, Verified } from 'lucide-react';
 import './myProfile.css';
 

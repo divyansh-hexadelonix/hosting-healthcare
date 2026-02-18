@@ -1,9 +1,9 @@
 import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './assets/AuthContext';
+import { useAuth } from '../assets/AuthContext';
 import './Login.css';
-import Logo from './assets/logo.png';
+import Logo from '../assets/logo.png';
 
 type loginScreen = 'login' | 'reset';
 

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import './Signup.css';
-import Logo from './assets/logo.png';
+import Logo from '../assets/logo.png';
 
 interface SignupFormData {
   name: string;

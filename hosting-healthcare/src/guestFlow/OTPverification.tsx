@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from './assets/AuthContext';
+import { useAuth } from '../assets/AuthContext';
 import './OTPverification.css';
-import Logo from './assets/logo.png';
+import Logo from '../assets/logo.png';
 
 interface LocationState {
   phoneNumber: string;

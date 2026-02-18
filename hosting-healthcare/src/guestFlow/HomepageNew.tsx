@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Star, Heart, ArrowRight, Users, List, BarChart2, ArrowUpRight, ShieldCheck, Key, HousePlus, CircleCheck } from 'lucide-react';
-import { useAuth } from './assets/AuthContext';
+import { useAuth } from '../assets/AuthContext';
 import './HomepageNew.css';
 import { propertiesData, PropertyDataType } from './data/propertiesData';
-import laptopBg from './assets/laptop-bg.png';
-import heroBg from './assets/hero-bg.png';
-import doctorsImg from './assets/doctors.jpg';
-import ratingBg from './assets/rating-bg.jpg';
-import phoneCall from './assets/phone-call.jpg';
-import houseContract from './assets/house-contract.jpg';
-import roomImg from './assets/room.jpg';
-import appImg from './assets/app-mockup.png';
+import laptopBg from '../assets/laptop-bg.png';
+import heroBg from '../assets/hero-bg.png';
+import doctorsImg from '../assets/doctors.jpg';
+import ratingBg from '../assets/rating-bg.jpg';
+import phoneCall from '../assets/phone-call.jpg';
+import houseContract from '../assets/house-contract.jpg';
+import roomImg from '../assets/room.jpg';
+import appImg from '../assets/app-mockup.png';
 
 const HomepageNew: React.FC = () => {
   const navigate = useNavigate();

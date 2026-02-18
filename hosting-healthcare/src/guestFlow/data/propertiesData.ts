@@ -1,11 +1,11 @@
-import hotelImg from '../assets/hotel-swimming-pool.jpg';
-import villaImg from '../assets/Villa image 1.png';
-import swimingpoolImg from '../assets/Swiming_Pool_Villa.jpg';
-import whitehouseImg from '../assets/White-house-villa-image.png';
-import houseviewImg from '../assets/House-View-image.png';
-import hotelviewpointImg from '../assets/Hotel View Point.jpg';
-import tropicalbeachresortImg from '../assets/Tropical Beach Resort.jpg';
-import sunsethotelImg from '../assets/Sunset view hotel.jpg';
+import hotelImg from '../../assets/hotel-swimming-pool.jpg';
+import villaImg from '../../assets/Villa image 1.png';
+import swimingpoolImg from '../../assets/Swiming_Pool_Villa.jpg';
+import whitehouseImg from '../../assets/White-house-villa-image.png';
+import houseviewImg from '../../assets/House-View-image.png';
+import hotelviewpointImg from '../../assets/Hotel View Point.jpg';
+import tropicalbeachresortImg from '../../assets/Tropical Beach Resort.jpg';
+import sunsethotelImg from '../../assets/Sunset view hotel.jpg';
 
 export interface ReviewType {
   id: number;

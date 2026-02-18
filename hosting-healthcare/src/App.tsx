@@ -1,18 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomepageNew from './components/HomepageNew';   
-import BrowseStays from './components/BrowseStays'; 
-import Signup from './components/Signup';
-import Footer from './components/Footer';
-import Header from './components/Header';
-import Login from './components/Login';
-import OTPVerification from './components/OTPverification';
-import { AuthProvider } from './components/assets/AuthContext';
-import MyProfile from './components/myProfile';
-import Wishlist from './components/Wishlist';
-import StayDetails from './components/StayDetails/StayDetails';
-import Gallery from './components/StayDetails/Gallery';
-import MyBookings from './components/MyBookings';
+import HomepageNew from './guestFlow/HomepageNew';   
+import BrowseStays from './guestFlow/BrowseStays'; 
+import Signup from './guestFlow/Signup';
+import Footer from './guestFlow/Footer';
+import Header from './guestFlow/Header';
+import Login from './guestFlow/Login';
+import OTPVerification from './guestFlow/OTPverification';
+import { AuthProvider } from './assets/AuthContext';
+import MyProfile from './guestFlow/myProfile';
+import Wishlist from './guestFlow/Wishlist';
+import StayDetails from './guestFlow/StayDetails/StayDetails';
+import Gallery from './guestFlow/StayDetails/Gallery';
+import MyBookings from './guestFlow/MyBookings';
 
 function App() {
   return (

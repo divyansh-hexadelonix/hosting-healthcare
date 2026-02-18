@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, UserCircle, LogOut, Inbox, Heart, Calendar } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from './assets/AuthContext';
-import Logo from './assets/logo.png';
+import { useAuth } from '../assets/AuthContext';
+import Logo from '../assets/logo.png';
 import './Header.css';
 
 const Header: React.FC = () => {

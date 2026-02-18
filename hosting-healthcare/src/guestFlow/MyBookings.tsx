@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Frown, AlertCircle, Heart, Star } from 'lucide-react';
-import { useAuth } from './assets/AuthContext';
+import { useAuth } from '../assets/AuthContext';
 import { propertiesData } from './data/propertiesData';
 import './MyBookings.css';
 

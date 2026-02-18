@@ -16,6 +16,13 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, onSubmit, ho
 
   if (!isOpen) return null;
 
+  const handleClose = () => {
+    setRating(0);
+    setHoverRating(0);
+    setReviewText('');
+    onClose();
+  };
+
   const handleSubmit = () => {
     if (rating === 0) {
       alert("Please select a star rating");
@@ -34,13 +41,13 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, onSubmit, ho
   };
 
   return (
-    <div className="review-modal-overlay" onClick={onClose}>
+    <div className="review-modal-overlay" onClick={handleClose}>
       <div className="review-modal" onClick={(e) => e.stopPropagation()}>
         
         {/* Header */}
         <div className="review-modal-header">
           <h2>Review Property!</h2>
-          <button className="close-modal-btn" onClick={onClose}>
+          <button className="close-modal-btn" onClick={handleClose}>
             <X size={24} />
           </button>
         </div>
@@ -86,7 +93,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, onSubmit, ho
 
         {/* Footer Buttons */}
         <div className="review-modal-footer">
-          <button className="modal-cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="modal-cancel-btn" onClick={handleClose}>Cancel</button>
           <button className="modal-submit-btn" onClick={handleSubmit}>Submit</button>
         </div>
 
