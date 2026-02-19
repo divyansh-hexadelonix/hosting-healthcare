@@ -13,6 +13,7 @@ import Wishlist from './guestFlow/Wishlist';
 import StayDetails from './guestFlow/StayDetails/StayDetails';
 import Gallery from './guestFlow/StayDetails/Gallery';
 import MyBookings from './guestFlow/MyBookings';
+import Inbox from './guestFlow/Inbox';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/stay-details" element={<StayDetails />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/inbox" element={<Inbox />} />
           {/* Other routes can be added here */}
         </Routes>
         <Footer/>
