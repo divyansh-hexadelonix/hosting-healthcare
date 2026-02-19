@@ -6,6 +6,12 @@ import './BrowseStays.css';
 import { propertiesData as properties } from './data/propertiesData';
 
 
+const formatDateDisplay = (dateString: string) => {
+  if (!dateString) return '';
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 function BrowseStays() {
   const navigate = useNavigate();
   const { user, isAuthenticated, toggleWishlist } = useAuth(); 
@@ -32,7 +38,7 @@ function BrowseStays() {
 
   // --- PAGINATION STATE ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Number of properties per page
+  const itemsPerPage = 8; 
 
   const isFilterActive = Object.values(filters).some(value => value === true);
 
@@ -53,7 +59,7 @@ function BrowseStays() {
 
   const handleSearch = () => {
     setSearchParams({ location, checkInDate, checkOutDate });
-    setCurrentPage(1); // Reset to page 1 on new search
+    setCurrentPage(1); 
   };
 
   const clearSearch = () => {
@@ -66,7 +72,7 @@ function BrowseStays() {
 
   const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.checked });
-    setCurrentPage(1); // Reset to page 1 on filter change
+    setCurrentPage(1); 
   };
 
   const clearFilters = () => {
@@ -97,7 +103,7 @@ function BrowseStays() {
                         (filters.villa && property.type === 'villa') || 
                         (!filters.hotel && !filters.villa);
 
-    // Price Filter (Simple logic based on string check for demo)
+    // Price Filter
     const priceVal = parseInt(property.price.replace(/[^0-9]/g, ''));
     const matchesPrice = (filters.priceBelow && priceVal < 4000) ||
                          (filters.priceAbove && priceVal >= 4000) ||
@@ -144,8 +150,16 @@ function BrowseStays() {
           <div className='search-input-group check-date-group'>
             <label className='search-label'>Move in date</label>
             <div className='input-icon-wrapper'>
+              <Calendar size={18} className='input-icon'/>
+              <input 
+                type="text" 
+                placeholder="dd/mm/yyyy"
+                value={formatDateDisplay(checkInDate)}
+                readOnly
+              />
               <input 
                 type="date" 
+                className='date-input-overlay'
                 value={checkInDate}
                 onChange={(e) => setCheckInDate(e.target.value)}
               />
@@ -155,15 +169,23 @@ function BrowseStays() {
           <div className='search-input-group check-date-group'>
             <label className='search-label'>Move out date</label>
             <div className='input-icon-wrapper'>
+              <Calendar size={18} className='input-icon'/>
+              <input 
+                type="text" 
+                placeholder="dd/mm/yyyy"
+                value={formatDateDisplay(checkOutDate)}
+                readOnly
+              />
               <input 
                 type="date" 
+                className='date-input-overlay'
                 value={checkOutDate}
                 onChange={(e) => setCheckOutDate(e.target.value)}
               />
             </div>
           </div>
 
-          <button className='filter-btn' onClick={() => setShowFilterModal(true)}>
+          <button className={`filter-btn ${isFilterActive ? 'active' : ''}`} onClick={() => setShowFilterModal(true)}>
             <SlidersHorizontal size={20} />
             <span className="filter-text">Filters</span>
             {isFilterActive && <span className="filter-badge"></span>}
@@ -275,7 +297,13 @@ function BrowseStays() {
           const isWishlisted = user?.wishlist?.includes(p.id.toString());
 
           return (
-            <div key={p.id} className="property-card" onClick={() => navigate('/stay-details', { state: { propertyId: p.id } })}>
+            <div key={p.id} className="property-card" onClick={() => {
+              if (isAuthenticated) {
+                navigate('/stay-details', { state: { propertyId: p.id } });
+              } else {
+                navigate('/login');
+              }
+            }}>
               <div className="property-image-container">
                 <img src={p.image} alt={p.hotelName} className="property-image" />
                 <button 

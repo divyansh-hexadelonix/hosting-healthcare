@@ -319,7 +319,7 @@ const StayDetails: React.FC = () => {
                             <span>
                                 {bookingForm.checkIn || bookingForm.checkOut 
                                     ? `${bookingForm.checkIn} - ${bookingForm.checkOut}` 
-                                    : 'Check-in - Check-out'}
+                                    : 'Move-in - Move-out'}
                             </span>
                             <Calendar size={20} onClick={handleOpenCalendar} style={{cursor: 'pointer'}} />
                          </div>
