@@ -52,6 +52,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return null;
   });
 
+  // Helper: removes cancelled requests older than 24 hours
+  const purgeStaleCancelledRequests = (userData: User): User => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const filtered = (userData.cancelledRequests || []).filter((req: BookingRequest) => {
+      const reqTime = new Date(req.requestDate).getTime();
+      // If unparseable, keep the entry to avoid accidental deletion
+      return isNaN(reqTime) || reqTime > cutoff;
+    });
+    return { ...userData, cancelledRequests: filtered };
+  };
+
   // Helper to update local storage and main DB simulation
   const updatePersistentStorage = (updatedUser: User) => {
     localStorage.setItem('currentUser', JSON.stringify(updatedUser));
@@ -78,8 +89,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         cancelledRequests: [], 
         ...userData 
     };
-    setUser(userWithData);
-    localStorage.setItem('currentUser', JSON.stringify(userWithData));
+    // Purge any cancelled requests older than 24hrs on login
+    const purged = purgeStaleCancelledRequests(userWithData);
+    setUser(purged);
+    localStorage.setItem('currentUser', JSON.stringify(purged));
   };
 
   // 3. Logout
@@ -137,8 +150,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const requestToCancel = prevUser.sentRequests.find(req => req.bookingId === bookingId);
           if (!requestToCancel) return prevUser;
 
-          // Create updated cancelled request object
-          const cancelledRequest: BookingRequest = { ...requestToCancel, status: 'Cancelled' };
+          // --- Remove from host's hh_host_requests in localStorage ---
+          try {
+            const hostRequests: any[] = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
+            const updatedHostRequests = hostRequests.filter(
+              (r: any) =>
+                !(r.guestName === prevUser.name && r.property === requestToCancel.hotelName)
+            );
+            localStorage.setItem('hh_host_requests', JSON.stringify(updatedHostRequests));
+            // Notify Dashboard in same tab to re-load
+            window.dispatchEvent(new Event('hh_requests_updated'));
+          } catch (e) {
+            console.error('Failed to update host requests on withdrawal', e);
+          }
+
+          // Store cancellation time as ISO string so 24hr purge can parse it reliably
+          const cancelledRequest: BookingRequest = {
+            ...requestToCancel,
+            status: 'Cancelled',
+            requestDate: new Date().toISOString(),
+          };
 
           // Filter out from sent requests
           const updatedSentRequests = prevUser.sentRequests.filter(req => req.bookingId !== bookingId);
@@ -146,11 +177,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           // Add to cancelled requests
           const updatedCancelledRequests = [cancelledRequest, ...(prevUser.cancelledRequests || [])];
 
-          const updatedUser = { 
-              ...prevUser, 
+          // Purge any existing cancelled requests older than 24hrs while we're here
+          const withNewCancellation = {
+              ...prevUser,
               sentRequests: updatedSentRequests,
-              cancelledRequests: updatedCancelledRequests
+              cancelledRequests: updatedCancelledRequests,
           };
+          const updatedUser = purgeStaleCancelledRequests(withNewCancellation);
           
           updatePersistentStorage(updatedUser);
           return updatedUser;

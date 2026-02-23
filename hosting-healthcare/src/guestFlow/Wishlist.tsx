@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MapPin, Star, Frown } from 'lucide-react';
 import { useAuth } from '../assets/AuthContext';
-import { propertiesData } from './data/propertiesData';
+import { propertiesData } from '../data/propertiesData';
 import './Wishlist.css';
 
 const Wishlist: React.FC = () => {

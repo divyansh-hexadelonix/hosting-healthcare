@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Star, Heart, ArrowRight, Users, List, BarChart2, ArrowUpRight, ShieldCheck, Key, HousePlus, CircleCheck } from 'lucide-react';
 import { useAuth } from '../assets/AuthContext';
 import './HomepageNew.css';
-import { propertiesData, PropertyDataType } from './data/propertiesData';
+import { propertiesData, PropertyDataType } from '../data/propertiesData';
 import laptopBg from '../assets/laptop-bg.png';
 import heroBg from '../assets/hero-bg.png';
 import doctorsImg from '../assets/doctors.jpg';
@@ -264,8 +264,8 @@ const HomepageNew: React.FC = () => {
           {/* --- PROPERTY TO RENT SECTION --- */}
           <section className="section-container property-to-rent-section">
               <div className="rent-cta-banner">
-                  <span className="rent-cta-text">Ready to List Your Property for Healthcare Professionals?</span>
-                  <button className="rent-cta-btn">List Your Property</button>
+                  <span className="rent-cta-text">Ready to List Your Property for Healthcare Professionals?</span> 
+                  <button className="rent-cta-btn" onClick={() => isAuthenticated ? navigate('/host/dashboard') : navigate('/login')}>List Your Property</button>
               </div>
 
               <div className="rent-blue-background">

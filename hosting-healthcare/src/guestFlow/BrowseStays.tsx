@@ -1,9 +1,9 @@
-import React, { useState, ChangeEvent, useEffect, MouseEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import { MapPin, Calendar, SlidersHorizontal, Search, X, Building2, Home, Banknote, Users, Star, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../assets/AuthContext';
 import './BrowseStays.css';
-import { propertiesData as properties } from './data/propertiesData';
+import { propertiesData as properties } from '../data/propertiesData';
 
 
 const formatDateDisplay = (dateString: string) => {

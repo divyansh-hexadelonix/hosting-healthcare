@@ -38,6 +38,7 @@ const Login: React.FC = () => {
 
     // Check if mock user data exists in DB to merge persistence
     const persistedMockUser = users.find((u: any) => u.email === MOCK_CREDENTIALS.email);
+    const persistedDavid = users.find((u: any) => u.email === 'david@gmail.com');
 
     // 2. Combine Hardcoded Mock User with Registered Users
     const allUsers = [
@@ -53,6 +54,17 @@ const Login: React.FC = () => {
         wishlist: persistedMockUser?.wishlist || [],
         sentRequests: persistedMockUser?.sentRequests || [],
         cancelledRequests: persistedMockUser?.cancelledRequests || []
+      },
+      {
+        name: 'David Beckham',
+        email: 'david@gmail.com',
+        password: 'password123',
+        profileImage: 'https://randomuser.me/api/portraits/men/32.jpg',
+        contactNumber: '000 000 0000',
+        medicalLicense: 'A029CJ200',
+        wishlist: persistedDavid?.wishlist || [],
+        sentRequests: persistedDavid?.sentRequests || [],
+        cancelledRequests: persistedDavid?.cancelledRequests || []
       }
     ];
 
@@ -76,7 +88,7 @@ const Login: React.FC = () => {
       alert(`Login Successful! Welcome back, ${foundUser.name}.`);
       navigate('/'); 
     } else {
-      alert("Invalid credentials. Try test@gmail.com / password123");
+      alert("Invalid credentials. Try test@gmail.com / password123 or david@gmail.com / password123");
     }
   };
 

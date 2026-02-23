@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Star, Wifi, Waves, BedDouble, Car, Cigarette, ChevronDown, ChevronUp, LayoutGrid, Check, X, Calendar } from 'lucide-react';
-import { propertiesData } from '../data/propertiesData';
+import { propertiesData } from '../../data/propertiesData';
 import ReviewModal from './ReviewModal'; 
 import { useAuth } from '../../assets/AuthContext';
 import './StayDetails.css';
@@ -185,6 +185,31 @@ const StayDetails: React.FC = () => {
         alert("Please select dates using the calendar.");
         return;
     }
+
+    // Create a booking request object for the Host Dashboard
+    const newRequest = {
+      id: Date.now(),
+      guestName: user?.name || 'Guest User',
+      avatar: user?.profileImage || 'https://randomuser.me/api/portraits/lego/1.jpg',
+      moveIn: bookingForm.checkIn,
+      moveOut: bookingForm.checkOut,
+      property: property.hotelName,
+      status: 'Pending',
+      hostName: property.hostName,
+      hostEmail: property.hostEmail,
+      timestamp: new Date().toISOString(),
+      // Guest facility details entered on booking form
+      guestFacilityName: bookingForm.facilityName,
+      guestContactName: bookingForm.contactName,
+      guestContactNumber: bookingForm.contactNumber,
+    };
+
+    // Save to "Host Database" (localStorage)
+    const existingRequests = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
+    localStorage.setItem('hh_host_requests', JSON.stringify([newRequest, ...existingRequests]));
+    // Notify Dashboard in the same tab that new requests are available
+    window.dispatchEvent(new Event('hh_requests_updated'));
+
     sendBookingRequest({
         propertyId: property.id,
         hotelName: property.hotelName,

@@ -58,7 +58,9 @@ const Header: React.FC = () => {
 
         {/* Actions */}
         <div className="header-actions">
-          <button className="list-property-btn">List Your Property</button>
+          <button className="list-property-btn" onClick={() => isAuthenticated ? navigate('/host/dashboard') : navigate('/login')}>
+            List Your Property
+          </button>
           
           <div className="profile-menu-container" ref={dropdownRef}>
             <button 
@@ -120,7 +122,7 @@ const Header: React.FC = () => {
                     <Link to="/login" className="dropdown-item">Login</Link>
                     <Link to="/signup" className="dropdown-item">Signup</Link>
                     <div className="dropdown-divider"></div>
-                    <Link to="/post-property" className="dropdown-item">Post a Property</Link>
+                    <Link to="/login" className="dropdown-item">Post a Property</Link>
                   </div>
                 )}
               </div>

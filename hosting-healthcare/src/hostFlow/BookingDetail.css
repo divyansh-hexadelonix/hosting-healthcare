@@ -1,0 +1,355 @@
+.bd-page {
+  width: 100%;
+  min-height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+}
+
+.bd-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: calc(100vh - 180px);
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/*-- LEFT PANEL - Guest Details --*/
+.bd-left {
+  padding: 32px 28px;
+  border-right: 1px solid #eaeaea;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.bd-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+}
+
+.bd-avatar-box {
+  width: 100%;
+  aspect-ratio: 3 / 2.8;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0ecff;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.bd-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.bd-avatar-initials {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #5c35d6;
+  background: linear-gradient(135deg, #ede9fe, #c4b5fd);
+}
+
+.bd-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.bd-guest-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.bd-msg-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #5c35d6;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.bd-msg-btn:hover {
+  background: #4a28b5;
+  transform: scale(1.07);
+}
+
+.bd-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bd-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bd-info-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #5c35d6;
+  margin-bottom: 2px;
+}
+
+.bd-info-value {
+  font-size: 0.92rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.bd-facility-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bd-facility-lines span {
+  font-size: 0.92rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+/*-- RIGHT PANEL - Property --*/
+.bd-right {
+  padding: 32px 32px;
+  background: #fff;
+}
+
+.bd-property-card {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.bd-property-img-wrap {
+  width: 260px;
+  height: 100%;
+  min-height: 180px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.bd-property-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.bd-property-card:hover .bd-property-img {
+  transform: scale(1.03);
+}
+
+.bd-property-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bd-property-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.bd-property-price {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #5c35d6;
+  letter-spacing: -0.02em;
+}
+
+.bd-dates-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bd-date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bd-date-label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.bd-date-value {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.bd-duration-pill {
+  background: #5c35d6;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.bd-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.bd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 28px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.15s;
+  min-width: 120px;
+}
+
+.bd-btn:hover  { opacity: 0.92; transform: translateY(-1px); }
+.bd-btn:active { transform: translateY(0); }
+
+.bd-btn--accept {
+  background: #16a34a;
+  color: white;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.28);
+}
+
+.bd-btn--accept:hover {
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.38);
+}
+
+.bd-btn--reject {
+  background: #dc2626;
+  color: white;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.24);
+}
+
+.bd-btn--reject:hover {
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.34);
+}
+
+.bd-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  animation: bd-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bd-pop-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.bd-feedback--accepted {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #bbf7d0;
+}
+
+.bd-feedback--rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1.5px solid #fecaca;
+}
+
+.bd-empty {
+  padding: 60px;
+  text-align: center;
+  color: #999;
+}
+
+.bd-empty button {
+  margin-top: 16px;
+  background: #5c35d6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/*-- Responsive --*/
+@media (max-width: 900px) {
+  .bd-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bd-left {
+    border-right: none;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .bd-avatar-box {
+    max-width: 280px;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 640px) {
+  .bd-property-card {
+    grid-template-columns: 1fr;
+  }
+
+  .bd-property-img-wrap {
+    width: 100%;
+    height: 180px;
+  }
+
+  .bd-actions {
+    flex-direction: column;
+  }
+
+  .bd-btn {
+    width: 100%;
+  }
+}

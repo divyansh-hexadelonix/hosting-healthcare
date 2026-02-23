@@ -1,11 +1,11 @@
-import hotelImg from '../../assets/hotel-swimming-pool.jpg';
-import villaImg from '../../assets/Villa image 1.png';
-import swimingpoolImg from '../../assets/Swiming_Pool_Villa.jpg';
-import whitehouseImg from '../../assets/White-house-villa-image.png';
-import houseviewImg from '../../assets/House-View-image.png';
-import hotelviewpointImg from '../../assets/Hotel View Point.jpg';
-import tropicalbeachresortImg from '../../assets/Tropical Beach Resort.jpg';
-import sunsethotelImg from '../../assets/Sunset view hotel.jpg';
+import hotelImg from '../assets/hotel-swimming-pool.jpg';
+import villaImg from '../assets/Villa image 1.png';
+import swimingpoolImg from '../assets/Swiming_Pool_Villa.jpg';
+import whitehouseImg from '../assets/White-house-villa-image.png';
+import houseviewImg from '../assets/House-View-image.png';
+import hotelviewpointImg from '../assets/Hotel View Point.jpg';
+import tropicalbeachresortImg from '../assets/Tropical Beach Resort.jpg';
+import sunsethotelImg from '../assets/Sunset view hotel.jpg';
 
 export interface ReviewType {
   id: number;
@@ -28,6 +28,8 @@ export interface PropertyDataType {
   price: string;
   type: string;
   reviewsList: ReviewType[];
+  hostName: string;
+  hostEmail: string;
 }
 
 const MOCK_REVIEWS: ReviewType[] = [
@@ -50,6 +52,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$5,000',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 2,
@@ -63,6 +67,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$3,500',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 3,
@@ -76,6 +82,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$6,499',
       type: 'villa',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 4,
@@ -89,6 +97,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$4,000',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 5,
@@ -102,6 +112,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$5,000',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 6,
@@ -115,6 +127,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$6,000',
       type: 'villa',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 7,
@@ -128,6 +142,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$7,500',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 8,
@@ -141,6 +157,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$4,800',
       type: 'villa',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 9,
@@ -154,6 +172,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$3,000',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 10,
@@ -167,6 +187,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$4,200',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 11,
@@ -180,6 +202,8 @@ export const propertiesData: PropertyDataType[] = [
       price: '$8,000',
       type: 'villa',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
     {
       id: 12,
@@ -193,5 +217,37 @@ export const propertiesData: PropertyDataType[] = [
       price: '$5,200',
       type: 'hotel',
       reviewsList: MOCK_REVIEWS,
+      hostName: 'David Beckham',
+      hostEmail: 'david@gmail.com',
     },
+];
+
+export const mockBookingRequests = [
+  {
+    id: 101,
+    guestName: 'Craig Thomas',
+    avatar: 'https://randomuser.me/api/portraits/men/44.jpg',
+    moveIn: '10-03-2025',
+    moveOut: '10-04-2025',
+    property: 'Grand Canyon Horseshoe Bend',
+    status: 'Pending'
+  },
+  {
+    id: 102,
+    guestName: 'Sarah Jenkins',
+    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+    moveIn: '15-04-2025',
+    moveOut: '20-04-2025',
+    property: 'Modern Loft in City Center',
+    status: 'Pending'
+  },
+  {
+    id: 103,
+    guestName: 'Daniel Kyte',
+    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    moveIn: '01-05-2025',
+    moveOut: '05-05-2025',
+    property: 'Cozy Beachfront Cottage',
+    status: 'Pending'
+  }
 ];

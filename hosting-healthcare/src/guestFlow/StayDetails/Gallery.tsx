@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
-import { propertiesData } from '../data/propertiesData';
+import { propertiesData } from '../../data/propertiesData';
 import './Gallery.css';
 
 const Gallery: React.FC = () => {
