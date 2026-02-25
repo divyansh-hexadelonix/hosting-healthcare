@@ -24,6 +24,8 @@ import HostLogin from './hostFlow/hostLogin';
 import HostSignup from './hostFlow/hostSignup';
 import HostOTPVerification from './hostFlow/hostOTPverification';
 import HostMyProfile from './hostFlow/hostMyProfile';
+import MyListing from './hostFlow/MyListing';
+
 
 const GuestLayout = () => (
   <>
@@ -59,6 +61,7 @@ function App() {
           <Route path="/host-otp-verification" element={<HostOTPVerification />} />
           <Route element={<HostLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/my-listings" element={<MyListing />} />
             <Route path="/booking-detail" element={<BookingDetail />} />
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/pricing" element={<Pricing />} />
