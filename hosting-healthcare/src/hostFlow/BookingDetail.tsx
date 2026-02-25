@@ -112,6 +112,10 @@ const BookingDetail: React.FC = () => {
   const propertyImage = propertyData?.image ||
     'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop';
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (!row || !guest) {
     return (
       <div className="bd-empty">
@@ -177,10 +181,6 @@ const BookingDetail: React.FC = () => {
     window.dispatchEvent(new Event('hh_requests_updated'));
     setTimeout(() => navigate('/bookings'), 1000);
   };
-
-  useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
 
   return (
     <div className="bd-page">
