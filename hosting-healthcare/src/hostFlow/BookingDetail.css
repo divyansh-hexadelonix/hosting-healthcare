@@ -57,7 +57,7 @@
   justify-content: center;
   font-size: 3rem;
   font-weight: 700;
-  color: #5c35d6;
+  color: #6d28d9;
   background: linear-gradient(135deg, #ede9fe, #c4b5fd);
 }
 
@@ -79,7 +79,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #5c35d6;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   border: none;
   display: flex;
   align-items: center;
@@ -110,7 +110,10 @@
 .bd-info-label {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #5c35d6;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 2px;
 }
 
@@ -186,7 +189,10 @@
   margin: 0;
   font-size: 1.3rem;
   font-weight: 800;
-  color: #5c35d6;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;
 }
 
@@ -217,7 +223,7 @@
 }
 
 .bd-duration-pill {
-  background: #5c35d6;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   font-size: 0.72rem;
   font-weight: 700;
@@ -309,13 +315,30 @@
 
 .bd-empty button {
   margin-top: 16px;
-  background: #5c35d6;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
+}
+
+.bd-accepted-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+  animation: bd-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /*-- Responsive --*/
@@ -353,3 +376,4 @@
     width: 100%;
   }
 }
+

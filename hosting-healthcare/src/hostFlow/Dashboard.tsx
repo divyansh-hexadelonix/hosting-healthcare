@@ -12,10 +12,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { propertiesData, mockBookingRequests } from '../data/propertiesData';
-import { useAuth } from '../assets/AuthContext';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
   const [averageRating, setAverageRating] = useState<string>("0.0");
@@ -24,6 +23,11 @@ const Dashboard: React.FC = () => {
   const [dateSort, setDateSort] = useState('newest');
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isPropertyDropdownOpen, setIsPropertyDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('hh_host_user');
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
 
   const loadRequests = React.useCallback(() => {
     if (!user) return;
@@ -107,7 +111,10 @@ const Dashboard: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Filter & Sort Logic
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
   const filteredRequests = React.useMemo(() => {
     let result = [...bookingRequests];
 
@@ -138,7 +145,7 @@ const Dashboard: React.FC = () => {
       return dateSort === 'newest' ? tB - tA : tA - tB;
     });
 
-    return result;
+    return result.slice(0, 5);
   }, [bookingRequests, searchText, selectedProperty, dateSort]);
 
   const uniqueProperties = React.useMemo(() => {
@@ -150,6 +157,10 @@ const Dashboard: React.FC = () => {
     setSelectedProperty('');
     setDateSort('newest');
   };
+
+  const confirmedCount = React.useMemo(() => {
+    return bookingRequests.filter(r => (r.status || '').toLowerCase() === 'accepted').length;
+  }, [bookingRequests]);
 
   // Navigate to full booking detail page
   const handleViewDetails = (row: any) => {
@@ -198,7 +209,7 @@ const Dashboard: React.FC = () => {
             <BarChart2 size={24} color="#339af0" />
           </div>
           <div className="insight-data">
-            <h3>8</h3>
+            <h3>{confirmedCount}</h3>
             <p>Bookings Confirmed</p>
           </div>
         </div>
@@ -214,10 +225,15 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <h2 className="section-title">Booking Requests</h2>
+      <div className="section-title-row">
+        <h2 className="section-title">Booking Requests</h2>
+        <button className="dashboard-view-all-btn" onClick={() => navigate('/bookings')}>
+          View All
+        </button>
+      </div>
 
       {/* Table Toolbar */}
-      <div className="table-toolbar">
+      <div className="table-toolbar table-toolbar--narrow">
         <div className="toolbar-left">
           <div className="filter-icon-box">
             <Filter size={18} color="#555" />
@@ -227,9 +243,9 @@ const Dashboard: React.FC = () => {
           <div className="toolbar-divider"></div>
           
           {/* Date Dropdown */}
-          <div className="toolbar-dropdown date-dropdown-trigger" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}>
-            <span style={{ marginRight: '8px', fontSize: '14px', color: '#555' }}>
-              {dateSort === 'newest' ? 'Date: Newest' : 'Date: Oldest'}
+          <div className="toolbar-dropdown date-dropdown-trigger" onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}>
+            <span>
+              {dateSort === 'newest' ? 'Date' : 'Date: Oldest'}
             </span>
             <ChevronDown 
               size={16} 
@@ -237,9 +253,9 @@ const Dashboard: React.FC = () => {
               style={{ transform: isDateDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} 
             />
             {isDateDropdownOpen && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', backgroundColor: 'white', border: '1px solid #eee', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '140px', overflow: 'hidden' }}>
-                <div onClick={(e) => { e.stopPropagation(); setDateSort('newest'); setIsDateDropdownOpen(false); }} style={{ padding: '10px 16px', fontSize: '14px', color: '#333', cursor: 'pointer', backgroundColor: dateSort === 'newest' ? '#f9f9f9' : 'white' }}>Date: Newest</div>
-                <div onClick={(e) => { e.stopPropagation(); setDateSort('oldest'); setIsDateDropdownOpen(false); }} style={{ padding: '10px 16px', fontSize: '14px', color: '#333', cursor: 'pointer', backgroundColor: dateSort === 'oldest' ? '#f9f9f9' : 'white' }}>Date: Oldest</div>
+              <div className="dashboard-dropdown-menu">
+                <div className={`dashboard-dropdown-item ${dateSort === 'newest' ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setDateSort('newest'); setIsDateDropdownOpen(false); }}>Date: Newest</div>
+                <div className={`dashboard-dropdown-item ${dateSort === 'oldest' ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setDateSort('oldest'); setIsDateDropdownOpen(false); }}>Date: Oldest</div>
               </div>
             )}
           </div>
@@ -247,9 +263,9 @@ const Dashboard: React.FC = () => {
           <div className="toolbar-divider"></div>
 
           {/* Property Dropdown */}
-          <div className="toolbar-dropdown property-dropdown-trigger" style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setIsPropertyDropdownOpen(!isPropertyDropdownOpen)}>
-            <span style={{ marginRight: '8px', fontSize: '14px', color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>
-              {selectedProperty || 'All Properties'}
+          <div className="toolbar-dropdown property-dropdown-trigger" onClick={() => setIsPropertyDropdownOpen(!isPropertyDropdownOpen)}>
+            <span style={{ maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {selectedProperty || 'Property'}
             </span>
             <ChevronDown 
               size={16} 
@@ -257,10 +273,10 @@ const Dashboard: React.FC = () => {
               style={{ transform: isPropertyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} 
             />
             {isPropertyDropdownOpen && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', backgroundColor: 'white', border: '1px solid #eee', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '200px', maxHeight: '300px', overflowY: 'auto' }}>
-                <div onClick={(e) => { e.stopPropagation(); setSelectedProperty(''); setIsPropertyDropdownOpen(false); }} style={{ padding: '10px 16px', fontSize: '14px', color: '#333', cursor: 'pointer', backgroundColor: selectedProperty === '' ? '#f9f9f9' : 'white' }}>All Properties</div>
+              <div className="dashboard-dropdown-menu dashboard-dropdown-menu--wide">
+                <div className={`dashboard-dropdown-item ${selectedProperty === '' ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedProperty(''); setIsPropertyDropdownOpen(false); }}>All Properties</div>
                 {uniqueProperties.map(p => (
-                  <div key={p} onClick={(e) => { e.stopPropagation(); setSelectedProperty(p); setIsPropertyDropdownOpen(false); }} style={{ padding: '10px 16px', fontSize: '14px', color: '#333', cursor: 'pointer', backgroundColor: selectedProperty === p ? '#f9f9f9' : 'white' }}>{p}</div>
+                  <div key={p} className={`dashboard-dropdown-item ${selectedProperty === p ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setSelectedProperty(p); setIsPropertyDropdownOpen(false); }}>{p}</div>
                 ))}
               </div>
             )}

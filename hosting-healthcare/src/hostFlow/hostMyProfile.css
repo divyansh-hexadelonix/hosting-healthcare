@@ -1,13 +1,16 @@
-.profile-page-wrapper {
+.host-profile-page-wrapper {
   background-color: #f9f9f9;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   padding: 20px;
+  align-items: flex-start;
   font-family: 'Segoe UI', sans-serif;
+  margin-top: -50px;
+  overflow: hidden;
 }
 
-.profile-card-container {
+.host-profile-card-container {
   background: white;
   width: 100%;
   max-width: 1400px;
@@ -19,34 +22,34 @@
 }
 
 /* Purple Header Strip */
-.profile-header-strip {
+.host-profile-header-strip {
   background-color: #9263e8; 
   padding: 20px 40px;
 }
 
-.profile-header-strip h1 {
+.host-profile-header-strip h1 {
   color: white;
   margin: 0;
   font-size: 20px;
   font-weight: 600;
 }
 
-.profile-content-body {
+.host-profile-content-body {
   padding: 24px;
 }
 
-.profile-user-section {
+.host-profile-user-section {
   display: flex;
   align-items: center;
   gap: 20px;
   margin-bottom: 24px;
 }
 
-.profile-avatar-wrapper {
+.host-profile-avatar-wrapper {
   position: relative;
 }
 
-.main-profile-img {
+.host-main-profile-img {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -55,7 +58,7 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.edit-avatar-btn {
+.host-edit-avatar-btn {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -71,7 +74,7 @@
   color: #7c3aed;
 }
 
-.profile-user-name {
+.host-profile-user-name {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
@@ -81,33 +84,33 @@
   gap: 8px;
 }
 
-.profile-user-email {
+.host-profile-user-email {
   margin: 4px 0 0 0;
   font-size: 14px;
   color: #888;
 }
 
 /* Form Grid */
-.profile-form-grid {
+.host-profile-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   row-gap: 10px;
 }
 
-.form-group {
+.host-form-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.form-group label {
+.host-form-group label {
   font-size: 14px;
   font-weight: 500;
   color: #444;
 }
 
-.form-group input {
+.host-form-group input {
   padding: 8px 12px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
@@ -117,22 +120,22 @@
   transition: border-color 0.2s;
 }
 
-.form-group input:focus {
+.host-form-group input:focus {
   border-color: #9263e8;
 }
 
-.input-readonly {
+.host-input-readonly {
   background-color: #fcfcfc;
   color: #777;
 }
 
 /* Full Width Sections */
-.full-width-section {
+.host-full-width-section {
   grid-column: 1 / -1;
   margin-top: 5px;
 }
 
-.section-heading {
+.host-section-heading {
   font-size: 16px;
   font-weight: 700;
   color: #222;
@@ -140,25 +143,25 @@
 }
 
 /* Membership Section */
-.membership-section {
+.host-membership-section {
   margin-top: -20px;
 }
 
-.active-plan-label {
+.host-active-plan-label {
   font-size: 14px;
   color: #444;
   margin: 0 0 4px 0;
   font-weight: 500;
 }
 
-.plan-name {
+.host-plan-name {
   font-size: 14px;
   color: #5a2c91;
   font-weight: 550;
-  margin: 0 0 24px 0;
+  margin: 0 0 12px 0;
 }
 
-.renew-plan-btn {
+.host-renew-plan-btn {
   background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   border: none;
@@ -173,7 +176,7 @@
 }
 
 /* Footer Buttons */
-.profile-footer-actions {
+.host-profile-footer-actions {
   display: flex;
   justify-content: flex-end;
   gap: 16px;
@@ -182,7 +185,7 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.cancel-btn {
+.host-cancel-btn {
   padding: 12px 30px;
   background-color: #9ca3af; 
   color: white;
@@ -192,7 +195,7 @@
   cursor: pointer;
 }
 
-.update-btn {
+.host-update-btn {
   padding: 12px 30px;
   background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
@@ -202,13 +205,13 @@
   cursor: pointer;
 }
 
-.renew-plan-btn:hover, .update-btn:hover, .cancel-btn:hover {
+.host-renew-plan-btn:hover, .host-update-btn:hover, .host-cancel-btn:hover {
   opacity: 0.9;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .profile-form-grid {
+  .host-profile-form-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -13,31 +13,41 @@ import {
   Bell,
   ChevronDown
 } from 'lucide-react';
-import { useAuth } from '../assets/AuthContext';
+import { useTotalUnread } from '../shared/useUnreadMessages';
 import { propertiesData } from '../data/propertiesData';
 import Logo from '../assets/logo.png';
 import './Layout.css';
 
-// Helper: format timestamp into relative time or date label
-const formatNotifTime = (isoString: string): string => {
-  const date = new Date(isoString);
-  const now = Date.now();
-  const diff = now - date.getTime();
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
+// Format relative time — compact like Slack / Linear
+const formatRelativeTime = (isoString: string): string => {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins   = Math.floor(diff / 60000);
+  const hours  = Math.floor(diff / 3600000);
+  const days   = Math.floor(diff / 86400000);
   const months = Math.floor(diff / (86400000 * 30));
-
-  if (months >= 1) return `${months} month${months > 1 ? 's' : ''} ago`;
-  if (days >= 1) return `${days} day${days > 1 ? 's' : ''} ago`;
-  if (hours >= 1) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  if (mins >= 1) return `${mins} minute${mins > 1 ? 's' : ''} ago`;
+  if (months >= 1) return `${months}mo ago`;
+  if (days >= 1)   return `${days}d ago`;
+  if (hours >= 1)  return `${hours}h ago`;
+  if (mins >= 1)   return `${mins}m ago`;
   return 'Just now';
 };
 
-const formatNotifDate = (isoString: string): string => {
+const getGroupLabel = (isoString: string): string | null => {
   const date = new Date(isoString);
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const now  = new Date();
+  const startOfToday     = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const startOfYesterday = startOfToday - 86400000;
+  const ts               = date.getTime();
+
+  if (ts >= startOfToday)     return null;        
+  if (ts >= startOfYesterday) return 'Yesterday';
+  const daysAgo = Math.floor((startOfToday - ts) / 86400000);
+  if (daysAgo < 7) return date.toLocaleDateString('en-GB', { weekday: 'long' });
+  const sameYear = date.getFullYear() === now.getFullYear();
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short',
+    ...(sameYear ? {} : { year: 'numeric' }),
+  });
 };
 
 const getInitials = (name: string): string => {
@@ -57,19 +67,37 @@ interface Notification {
   guestName: string;
   avatar?: string;
   property: string;
-  timestamp: string; // ISO string
+  timestamp: string;
   read: boolean;
+  type?: 'booking_request' | 'cancellation';
   fullRequest?: any;
 }
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  
+  const [user, setUser] = useState<any>(null);
+
+  const loadHostUser = React.useCallback(() => {
+    const stored = localStorage.getItem('hh_host_user');
+    if (stored) setUser(JSON.parse(stored));
+    else setUser(null);
+  }, []);
+
+  useEffect(() => {
+    loadHostUser();
+    window.addEventListener('hh_host_user_updated', loadHostUser);
+    return () => window.removeEventListener('hh_host_user_updated', loadHostUser);
+  }, [loadHostUser]);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  // Unread messages badge for sidebar Inbox item
+  const inboxUnread = useTotalUnread(user?.email, 'host');
 
   // Build notifications from hh_host_requests on mount and updates
   const loadNotifications = React.useCallback(() => {
@@ -90,17 +118,18 @@ const Layout: React.FC = () => {
       property: r.property,
       timestamp: r.timestamp || new Date().toISOString(),
       read: readIds.includes(String(r.id)),
+      type: 'booking_request' as const,
       fullRequest: r,
     }));
 
-    // Also include mock requests as read/historical (with stable timestamps for demo)
     const mockNotifs: Notification[] = [
       {
         id: 'mock-101',
         guestName: 'Craig Thomas',
         property: 'Grand Canyon Horseshoe Bend',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toISOString(), // 3 months ago
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toISOString(),
         read: readIds.includes('mock-101'),
+        type: 'booking_request',
         fullRequest: {
           id: 'mock-101',
           guestName: 'Craig Thomas',
@@ -116,6 +145,7 @@ const Layout: React.FC = () => {
         property: 'Modern Loft in City Center',
         timestamp: new Date('2025-02-20T10:00:00Z').toISOString(),
         read: readIds.includes('mock-102'),
+        type: 'booking_request',
         fullRequest: {
           id: 'mock-102',
           guestName: 'Sarah Jenkins',
@@ -127,15 +157,34 @@ const Layout: React.FC = () => {
       },
     ];
 
-    // Merge: local requests first (newest), then mocks
-    const all = [...notifs, ...mockNotifs];
-    // Deduplicate by id
+    // Load guest cancellation notifications for this host
+    const cancelNotifs: Notification[] = (() => {
+      try {
+        const raw: any[] = JSON.parse(localStorage.getItem('hh_host_cancel_notifications') || '[]');
+        return raw
+          .filter(n => n.hostEmail === user.email || n.hostName === user.name)
+          .map(n => ({
+            id: `cancel-${n.bookingId}`,
+            guestName: n.guestName,
+            avatar: n.guestAvatar,
+            property: n.hotelName,
+            timestamp: n.timestamp,
+            read: readIds.includes(`cancel-${n.bookingId}`),
+            type: 'cancellation' as const,
+          }));
+      } catch { return []; }
+    })();
+
+    const all = [...cancelNotifs, ...notifs, ...mockNotifs];
     const seen = new Set();
     const deduped = all.filter(n => {
       if (seen.has(String(n.id))) return false;
       seen.add(String(n.id));
       return true;
     });
+
+    // Always sort newest-first so latest dates appear at the top
+    deduped.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     setNotifications(deduped);
   }, [user]);
@@ -147,9 +196,11 @@ const Layout: React.FC = () => {
   useEffect(() => {
     window.addEventListener('hh_requests_updated', loadNotifications);
     window.addEventListener('storage', loadNotifications);
+    window.addEventListener('hh_host_cancel_notifications_updated', loadNotifications);
     return () => {
       window.removeEventListener('hh_requests_updated', loadNotifications);
       window.removeEventListener('storage', loadNotifications);
+      window.removeEventListener('hh_host_cancel_notifications_updated', loadNotifications);
     };
   }, [loadNotifications]);
 
@@ -206,14 +257,15 @@ const Layout: React.FC = () => {
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'My Listings', path: '/my-listings', icon: <Box size={20} /> },
     { name: 'Bookings', path: '/bookings', icon: <CalendarDays size={20} /> },
-    { name: 'Pricing Plan', path: '/pricing-plan', icon: <Monitor size={20} /> },
-    { name: 'Profile', path: '/profile', icon: <User size={20} /> },
-    { name: 'Inbox', path: '/inbox', icon: <MessageSquare size={20} /> },
+    { name: 'Pricing Plan', path: '/pricing', icon: <Monitor size={20} /> },
+    { name: 'Profile', path: '/host-my-profile', icon: <User size={20} /> },
+    { name: 'Inbox', path: '/host-inbox', icon: <MessageSquare size={20} />, badge: inboxUnread },
   ];
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    localStorage.removeItem('hh_host_user');
+    window.dispatchEvent(new Event('hh_host_user_updated'));
+    navigate('/host-login');
   };
 
   return (
@@ -238,7 +290,14 @@ const Layout: React.FC = () => {
                 className={`nav-item ${location.pathname.includes(item.path) ? 'active' : ''}`}
                 onClick={() => navigate(item.path)}
               >
-                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-icon" style={{ position: 'relative' }}>
+                  {item.icon}
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="sidebar-inbox-badge">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
+                </span>
                 {!isCollapsed && <span className="nav-text">{item.name}</span>}
               </li>
             ))}
@@ -278,19 +337,38 @@ const Layout: React.FC = () => {
               {/* Notification Modal */}
               {isNotifOpen && (
                 <div className="notif-modal">
+                  {/* Header */}
                   <div className="notif-modal-header">
-                    <h3 className="notif-modal-title">Notifications</h3>
+                    <div className="notif-modal-header-left">
+                      <h3 className="notif-modal-title">Notifications</h3>
+                      {unreadCount > 0 && (
+                        <span className="notif-header-count">{unreadCount}</span>
+                      )}
+                    </div>
+                    {unreadCount > 0 && (
+                      <button className="mark-read-btn" onClick={markAllAsRead}>
+                        Mark all as read
+                      </button>
+                    )}
                   </div>
 
+                  {/* Body */}
                   <div className="notif-modal-body">
-                    {/* Unread Section */}
+                    {notifications.length === 0 && (
+                      <div className="notif-empty">
+                        <div className="notif-empty-icon">
+                          <Bell size={28} color="#c4b5fd" />
+                        </div>
+                        <p className="notif-empty-title">You're all caught up!</p>
+                        <p className="notif-empty-sub">New booking activity will appear here.</p>
+                      </div>
+                    )}
+
                     {unread.length > 0 && (
-                      <div className="notif-section">
-                        <div className="notif-section-header">
-                          <span className="notif-section-label">Unread</span>
-                          <button className="mark-read-btn" onClick={markAllAsRead}>
-                            Mark all as read
-                          </button>
+                      <div className="notif-group">
+                        <div className="notif-group-label">
+                          <span>New</span>
+                          <span className="notif-group-pill">{unread.length}</span>
                         </div>
                         {unread.map(n => (
                           <NotifItem
@@ -303,33 +381,31 @@ const Layout: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Read / Historical Section */}
                     {read.length > 0 && (
-                      <div className="notif-section">
-                        {read.map((n, idx) => {
-                          const dateLabel = formatNotifDate(n.timestamp);
-                          const prevDateLabel = idx > 0 ? formatNotifDate(read[idx - 1].timestamp) : null;
-                          const showDate = dateLabel !== prevDateLabel;
-                          return (
-                            <React.Fragment key={n.id}>
-                              {showDate && (
-                                <div className="notif-date-label">{dateLabel}</div>
-                              )}
-                              <NotifItem
-                                notif={n}
-                                isUnread={false}
-                                onViewNow={() => handleViewNotification(n)}
-                              />
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {notifications.length === 0 && (
-                      <div className="notif-empty">
-                        <Bell size={32} color="#ccc" />
-                        <p>No notifications yet</p>
+                      <div className={`notif-group ${unread.length > 0 ? 'notif-group--bordered' : ''}`}>
+                        {unread.length === 0 && (
+                          <div className="notif-group-label"><span>Earlier</span></div>
+                        )}
+                        {(() => {
+                          let lastLabel: string | null = '__init__';
+                          return read.map(n => {
+                            const label = getGroupLabel(n.timestamp);
+                            const showLabel = label !== lastLabel;
+                            lastLabel = label;
+                            return (
+                              <React.Fragment key={n.id}>
+                                {showLabel && label && (
+                                  <div className="notif-date-sep">{label}</div>
+                                )}
+                                <NotifItem
+                                  notif={n}
+                                  isUnread={false}
+                                  onViewNow={() => handleViewNotification(n)}
+                                />
+                              </React.Fragment>
+                            );
+                          });
+                        })()}
                       </div>
                     )}
                   </div>
@@ -365,31 +441,48 @@ interface NotifItemProps {
 }
 
 const NotifItem: React.FC<NotifItemProps> = ({ notif, isUnread, onViewNow }) => {
-  const timeLabel = isUnread
-    ? formatNotifTime(notif.timestamp)
-    : formatNotifDate(notif.timestamp);
+  const isCancellation = notif.type === 'cancellation';
+  const timeLabel = formatRelativeTime(notif.timestamp);
 
   return (
-    <div className={`notif-item ${isUnread ? 'notif-item--unread' : ''}`}>
+    <div
+      className={`notif-item ${isUnread ? 'notif-item--unread' : ''}`}
+      onClick={!isCancellation ? onViewNow : undefined}
+      style={{ cursor: isCancellation ? 'default' : 'pointer' }}
+    >
       {isUnread && <span className="notif-unread-dot" />}
+
+      {/* Avatar with type badge */}
       <div className="notif-avatar-wrap">
         {notif.avatar ? (
           <img src={notif.avatar} alt={notif.guestName} className="notif-avatar-img" />
         ) : (
           <div
             className="notif-avatar-initials"
-            style={{ backgroundColor: getAvatarColor(notif.guestName) }}
+            style={{ background: getAvatarColor(notif.guestName) }}
           >
             {getInitials(notif.guestName)}
           </div>
         )}
+        <span className={`notif-type-dot notif-type-dot--${isCancellation ? 'cancel' : 'request'}`} />
       </div>
+
       <div className="notif-content">
         <p className="notif-text">
-          <strong>{notif.guestName}</strong> has sent a booking request for your property.{' '}
-          <button className="notif-view-btn" onClick={onViewNow}>View now</button>
+          {isCancellation ? (
+            <><strong>{notif.guestName}</strong> cancelled their booking for <strong>{notif.property}</strong>.</>
+          ) : (
+            <><strong>{notif.guestName}</strong> sent a booking request for <strong>{notif.property}</strong>.</>
+          )}
         </p>
-        <span className="notif-time">{timeLabel}</span>
+        <div className="notif-meta-row">
+          <span className="notif-time">{timeLabel}</span>
+          {!isCancellation && (
+            <button className="notif-view-btn" onClick={e => { e.stopPropagation(); onViewNow(); }}>
+              View →
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

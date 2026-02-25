@@ -1,20 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Frown, AlertCircle, Heart, Star, Clock } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MapPin, Frown, AlertCircle, Heart, Star, Clock, CheckCircle2, XCircle, Hourglass } from 'lucide-react';
 import { useAuth } from '../assets/AuthContext';
 import { propertiesData } from '../data/propertiesData';
 import './MyBookings.css';
 
 type TabType = 'upcoming' | 'sent' | 'cancelled';
 
+type RequestStatus = 'Pending' | 'Accepted' | 'Rejected';
+
+const getRequestStatus = (
+  bookingId: string,
+  hotelName: string,
+  guestName: string
+): RequestStatus => {
+  try {
+    // 1. Check guest notifications first — most authoritative (keyed by bookingId)
+    const notifs: any[] = JSON.parse(localStorage.getItem('hh_guest_notifications') || '[]');
+    const notif = notifs.find(n => n.bookingId === bookingId);
+    if (notif) return notif.type === 'accepted' ? 'Accepted' : 'Rejected';
+
+    // 2. Fall back to hh_host_requests — match by exact bookingId (id field)
+    const hostReqs: any[] = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
+    const match = hostReqs.find(r => String(r.id) === String(bookingId));
+    if (match) return match.status === 'Accepted' ? 'Accepted' : 'Pending';
+
+    return 'Pending';
+  } catch { return 'Pending'; }
+};
+
 const MyBookings: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, withdrawBookingRequest, toggleWishlist } = useAuth();
-  const [activeTab, setActiveTab] = useState<TabType>('upcoming');
+
+  // Allow navigating to a specific tab via router state
+  const defaultTab = (location.state as any)?.defaultTab as TabType | undefined;
+  const [activeTab, setActiveTab] = useState<TabType>(defaultTab || 'upcoming');
+
+  // Track live status of each sent request
+  const [requestStatuses, setRequestStatuses] = useState<Record<string, RequestStatus>>({});
   
   // Withdrawal Modal State
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [targetBookingId, setTargetBookingId] = useState<string | null>(null);
+
+  // Cancel Booking Modal State (for accepted bookings)
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
 
   const [localReviews, setLocalReviews] = useState<Record<string, any[]>>({});
 
@@ -34,6 +67,27 @@ const MyBookings: React.FC = () => {
     if (!isAuthenticated) navigate('/login');
   }, [isAuthenticated, navigate]);
 
+  // Reload request statuses whenever hh_host_requests or hh_guest_notifications change
+  useEffect(() => {
+    const loadStatuses = () => {
+      if (!user) return;
+      const statuses: Record<string, RequestStatus> = {};
+      (user.sentRequests || []).forEach(req => {
+        statuses[req.bookingId] = getRequestStatus(req.bookingId, req.hotelName, user.name);
+      });
+      setRequestStatuses(statuses);
+    };
+    loadStatuses();
+    window.addEventListener('hh_requests_updated', loadStatuses);
+    window.addEventListener('hh_guest_notifications_updated', loadStatuses);
+    window.addEventListener('storage', loadStatuses);
+    return () => {
+      window.removeEventListener('hh_requests_updated', loadStatuses);
+      window.removeEventListener('hh_guest_notifications_updated', loadStatuses);
+      window.removeEventListener('storage', loadStatuses);
+    };
+  }, [user]);
+
   if (!isAuthenticated || !user) return null;
 
   // --- Logic ---
@@ -48,6 +102,51 @@ const MyBookings: React.FC = () => {
           setShowWithdrawModal(false);
           setTargetBookingId(null);
       }
+  };
+
+  const handleCancelBookingClick = (id: string) => {
+      setCancelTargetId(id);
+      setShowCancelModal(true);
+  };
+
+  const confirmCancelBooking = () => {
+    if (!cancelTargetId || !user) return;
+
+    const req = (user.sentRequests || []).find(r => r.bookingId === cancelTargetId);
+
+    // 1. Remove from hh_host_requests (so it disappears from Upcoming Bookings tab)
+    try {
+      const hostReqs: any[] = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
+      const updated = hostReqs.filter(r => String(r.id) !== String(cancelTargetId));
+      localStorage.setItem('hh_host_requests', JSON.stringify(updated));
+      window.dispatchEvent(new Event('hh_requests_updated'));
+    } catch {}
+
+    // 2. Write cancellation notification for the host
+    try {
+      if (req) {
+        const hostReqs: any[] = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
+        const hostReq = hostReqs.find(r => String(r.id) === String(cancelTargetId));
+        const cancelNotifs: any[] = JSON.parse(localStorage.getItem('hh_host_cancel_notifications') || '[]');
+        cancelNotifs.unshift({
+          bookingId: cancelTargetId,
+          guestName: user.name,
+          guestAvatar: user.profileImage || '',
+          hotelName: req.hotelName,
+          hostEmail: hostReq?.hostEmail || 'david@gmail.com',
+          hostName: hostReq?.hostName || 'David Beckham',
+          timestamp: new Date().toISOString(),
+        });
+        localStorage.setItem('hh_host_cancel_notifications', JSON.stringify(cancelNotifs));
+        window.dispatchEvent(new Event('hh_host_cancel_notifications_updated'));
+      }
+    } catch {}
+
+    // 3. Move to cancelled tab in AuthContext (same as withdraw)
+    withdrawBookingRequest(cancelTargetId);
+
+    setShowCancelModal(false);
+    setCancelTargetId(null);
   };
 
   // --- Renderers ---
@@ -166,13 +265,51 @@ const MyBookings: React.FC = () => {
                                   </div>
                               </div>
                           )}
-                      <button 
-                        className="action-btn withdraw-btn"
-                        style={{marginTop: 'auto'}}
-                        onClick={(e) => { e.stopPropagation(); handleWithdrawClick(req.bookingId); }}
-                      >
-                          Withdraw Request
-                      </button>
+
+                          {/*-- Status banner --*/}
+                          {(() => {
+                            const status = requestStatuses[req.bookingId] || 'Pending';
+                            return (
+                              <div className={`req-status-banner req-status-banner--${status.toLowerCase()}`}>
+                                {status === 'Accepted' && <><CheckCircle2 size={14} /> Request accepted</>}
+                                {status === 'Rejected' && <><XCircle size={14} /> Request rejected</>}
+                                {status === 'Pending'  && <><Hourglass size={14} /> Pending review</>}
+                              </div>
+                            );
+                          })()}
+
+                          {/*-- Action button (changes based on status) --*/}
+                          {(() => {
+                            const status = requestStatuses[req.bookingId] || 'Pending';
+                            if (status === 'Rejected') {
+                              return (
+                                <button className="action-btn withdraw-btn withdraw-btn--disabled" disabled>
+                                  Withdraw Request
+                                </button>
+                              );
+                            }
+                            if (status === 'Accepted') {
+                              return (
+                                <button
+                                  className="action-btn cancel-booking-btn"
+                                  style={{ marginTop: 'auto' }}
+                                  onClick={(e) => { e.stopPropagation(); handleCancelBookingClick(req.bookingId); }}
+                                >
+                                  Cancel Booking
+                                </button>
+                              );
+                            }
+                            // Pending
+                            return (
+                              <button
+                                className="action-btn withdraw-btn"
+                                style={{ marginTop: 'auto' }}
+                                onClick={(e) => { e.stopPropagation(); handleWithdrawClick(req.bookingId); }}
+                              >
+                                Withdraw Request
+                              </button>
+                            );
+                          })()}
                       </div>
                   </div>
               )})}
@@ -288,6 +425,23 @@ const MyBookings: React.FC = () => {
                     <div className="confirm-actions">
                         <button className="confirm-btn no" onClick={() => setShowWithdrawModal(false)}>No</button>
                         <button className="confirm-btn yes" onClick={confirmWithdraw}>Yes</button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* Cancel Booking Confirmation Modal */}
+        {showCancelModal && (
+            <div className="modal-overlay">
+                <div className="confirm-modal">
+                    <div className="modal-icon-wrapper">
+                       <AlertCircle size={40} color="#ef4444" />
+                    </div>
+                    <h3>Cancel this booking?</h3>
+                    <p className="confirm-modal-sub">The host will be notified of your cancellation.</p>
+                    <div className="confirm-actions">
+                        <button className="confirm-btn no" onClick={() => setShowCancelModal(false)}>No, Keep It</button>
+                        <button className="confirm-btn yes confirm-btn--danger" onClick={confirmCancelBooking}>Yes, Cancel</button>
                     </div>
                 </div>
             </div>

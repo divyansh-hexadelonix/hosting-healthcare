@@ -172,7 +172,20 @@ const StayDetails: React.FC = () => {
     return (total / reviews.length).toFixed(1);
   }, [reviews, property]);
 
-  if (!property) return <div className="loading-container">Loading property details...</div>;
+  const handleMessageHost = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    // Open guest inbox and auto-open conversation with this property's host
+    navigate('/inbox', {
+      state: {
+        openConvWith: property?.hostEmail,
+        hostName: property?.hostName,
+        hostAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+      }
+    });
+  };
 
   const handleBookRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,17 +199,20 @@ const StayDetails: React.FC = () => {
         return;
     }
 
+    // Single shared ID used across hh_host_requests + sentRequests so status can be matched
+    const sharedBookingId = 'BK-' + Date.now();
+
     // Create a booking request object for the Host Dashboard
     const newRequest = {
-      id: Date.now(),
+      id: sharedBookingId,
       guestName: user?.name || 'Guest User',
       avatar: user?.profileImage || 'https://randomuser.me/api/portraits/lego/1.jpg',
       moveIn: bookingForm.checkIn,
       moveOut: bookingForm.checkOut,
-      property: property.hotelName,
+      property: property?.hotelName || '',
       status: 'Pending',
-      hostName: property.hostName,
-      hostEmail: property.hostEmail,
+      hostName: property?.hostName || '',
+      hostEmail: property?.hostEmail || '',
       timestamp: new Date().toISOString(),
       // Guest facility details entered on booking form
       guestFacilityName: bookingForm.facilityName,
@@ -211,13 +227,14 @@ const StayDetails: React.FC = () => {
     window.dispatchEvent(new Event('hh_requests_updated'));
 
     sendBookingRequest({
-        propertyId: property.id,
-        hotelName: property.hotelName,
-        image: property.image,
-        city: property.city,
+        bookingId: sharedBookingId,
+        propertyId: property?.id || 0,
+        hotelName: property?.hotelName || '',
+        image: property?.image || '',
+        city: property?.city || '',
         checkInDate: bookingForm.checkIn,
         checkOutDate: bookingForm.checkOut,
-        price: property.price
+        price: property?.price || ''
     });
     setShowSuccessPopup(true);
     setTimeout(() => {
@@ -227,7 +244,7 @@ const StayDetails: React.FC = () => {
   };
 
   const handleShowAllPhotos = () => {
-    navigate('/gallery', { state: { propertyId: property.id } });
+    if (property) navigate('/gallery', { state: { propertyId: property.id } });
   };
 
   const handleReviewSubmit = (rating: number, text: string) => {
@@ -249,6 +266,8 @@ const StayDetails: React.FC = () => {
     localStorage.setItem('hh_reviews', JSON.stringify(parsedReviews));
     setIsReviewModalOpen(false);
   };
+
+  if (!property) return <div className="loading-container">Loading property details...</div>;
 
   return (
     <div className="details-page-container">
@@ -286,7 +305,7 @@ const StayDetails: React.FC = () => {
                     <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Host" className="host-avatar" />
                     <div><h3 className="host-name">David Beckham</h3><span className="host-badge">Host</span></div>
                 </div>
-                <button className="message-host-btn">Message Host</button>
+                <button className="message-host-btn" onClick={handleMessageHost}>Message Host</button>
             </div>
             <hr className="divider" />
             <div className="about-section"><h3>About this place</h3><p>Come and stay in this superb Grand Canyon Horseshoe Bend...</p></div>

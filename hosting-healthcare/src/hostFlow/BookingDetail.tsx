@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Check, X, MessageSquare } from 'lucide-react';
 import { propertiesData } from '../data/propertiesData';
@@ -61,7 +61,22 @@ const BookingDetail: React.FC = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const row = state?.row as any;
-  const [actionDone, setActionDone] = useState<'accepted' | 'rejected' | null>(null);
+
+  const isAlreadyAccepted = (row?.status || '').toLowerCase() === 'accepted';
+  const [actionDone, setActionDone] = useState<'accepted' | 'rejected' | null>(
+    isAlreadyAccepted ? 'accepted' : null
+  );
+
+  // Navigate to host inbox and auto-open conversation with this guest
+  const handleMessageGuest = () => {
+    navigate('/host-inbox', {
+      state: {
+        openConvWith: guest?.guestEmail,
+        guestName: guest?.guestName,
+        guestAvatar: guest?.avatar,
+      }
+    });
+  };
 
   const guest = useMemo(() => {
     if (!row) return null;
@@ -108,15 +123,48 @@ const BookingDetail: React.FC = () => {
 
   const duration = getDuration(guest.moveIn, guest.moveOut);
 
+  // Write a notification for the guest so they see it in their Header bell
+  const writeGuestNotification = (type: 'accepted' | 'rejected') => {
+    try {
+      const guestEmail =
+        guest.guestEmail ||
+        (() => {
+          const db: any[] = JSON.parse(localStorage.getItem('hh_users_db') || '[]');
+          return db.find((u: any) => u.name === guest.guestName)?.email || '';
+        })();
+
+      if (!guestEmail) return;
+
+      const notifs: any[] = JSON.parse(localStorage.getItem('hh_guest_notifications') || '[]');
+      // Avoids duplicate-update if same bookingId exist
+      const existingIdx = notifs.findIndex(
+        n => n.bookingId === row.id
+      );
+      const notif = {
+        id: `gn-${row.id || Date.now()}`,
+        bookingId: row.id,
+        guestEmail,
+        type,
+        hotelName: row.property,
+        timestamp: new Date().toISOString(),
+        read: false,
+      };
+      if (existingIdx >= 0) notifs[existingIdx] = notif;
+      else notifs.unshift(notif);
+
+      localStorage.setItem('hh_guest_notifications', JSON.stringify(notifs));
+      window.dispatchEvent(new Event('hh_guest_notifications_updated'));
+    } catch {}
+  };
+
   const handleAccept = () => {
     setActionDone('accepted');
-    // Update localStorage
     const requests: any[] = JSON.parse(localStorage.getItem('hh_host_requests') || '[]');
     localStorage.setItem('hh_host_requests', JSON.stringify(
       requests.map(r => r.id === row.id ? { ...r, status: 'Accepted' } : r)
     ));
+    writeGuestNotification('accepted');
     window.dispatchEvent(new Event('hh_requests_updated'));
-    setTimeout(() => navigate('/dashboard'), 1200);
   };
 
   const handleReject = () => {
@@ -125,9 +173,14 @@ const BookingDetail: React.FC = () => {
     localStorage.setItem('hh_host_requests', JSON.stringify(
       requests.filter(r => r.id !== row.id)
     ));
+    writeGuestNotification('rejected');
     window.dispatchEvent(new Event('hh_requests_updated'));
-    setTimeout(() => navigate('/dashboard'), 1200);
+    setTimeout(() => navigate('/bookings'), 1000);
   };
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   return (
     <div className="bd-page">
@@ -148,7 +201,7 @@ const BookingDetail: React.FC = () => {
 
           <div className="bd-name-row">
             <span className="bd-guest-name">{guest.guestName}</span>
-            <button className="bd-msg-btn" aria-label="Message guest">
+            <button className="bd-msg-btn" aria-label="Message guest" onClick={handleMessageGuest}>
               <MessageSquare size={16} />
             </button>
           </div>
@@ -218,11 +271,13 @@ const BookingDetail: React.FC = () => {
                 </div>
               </div>
 
-              {actionDone ? (
-                <div className={`bd-feedback bd-feedback--${actionDone}`}>
-                  {actionDone === 'accepted'
-                    ? <><Check size={17} /> Request Accepted! Redirecting…</>
-                    : <><X size={17} /> Request Rejected. Redirecting…</>}
+              {actionDone === 'accepted' ? (
+                <div className="bd-accepted-banner">
+                  <Check size={18} /> Accepted
+                </div>
+              ) : actionDone === 'rejected' ? (
+                <div className="bd-feedback bd-feedback--rejected">
+                  <X size={17} /> Request Rejected. Redirecting…
                 </div>
               ) : (
                 <div className="bd-actions">

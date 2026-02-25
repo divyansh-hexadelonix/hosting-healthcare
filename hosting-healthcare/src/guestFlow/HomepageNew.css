@@ -777,7 +777,7 @@
 }
 
 .toggle-btn.active {
-    background: #6d28d9;
+    background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(109, 40, 217, 0.3);
 }
@@ -871,7 +871,7 @@
 
 .get-started-btn {
     width: 100%;
-    background: #6d28d9;
+    background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
     color: white;
     border: none;
     padding: 14px;

@@ -13,10 +13,17 @@ import Wishlist from './guestFlow/Wishlist';
 import StayDetails from './guestFlow/StayDetails/StayDetails';
 import Gallery from './guestFlow/StayDetails/Gallery';
 import MyBookings from './guestFlow/MyBookings';
-import Inbox from './guestFlow/Inbox';
+import GuestInbox from './guestFlow/Guestinbox';
 import HostLayout from './hostFlow/Layout';
 import Dashboard from './hostFlow/Dashboard';
 import BookingDetail from './hostFlow/BookingDetail';
+import Bookings from './hostFlow/Bookings';
+import Pricing from './hostFlow/Pricing';
+import HostInbox from './hostFlow/Hostinbox';
+import HostLogin from './hostFlow/hostLogin';
+import HostSignup from './hostFlow/hostSignup';
+import HostOTPVerification from './hostFlow/hostOTPverification';
+import HostMyProfile from './hostFlow/hostMyProfile';
 
 const GuestLayout = () => (
   <>
@@ -43,15 +50,21 @@ function App() {
             <Route path="/stay-details" element={<StayDetails />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/my-bookings" element={<MyBookings />} />
-            <Route path="/inbox" element={<Inbox />} />
+            <Route path="/inbox" element={<GuestInbox />} />
           </Route>
 
           {/* Host Flow Routes */}
+          <Route path="/host-login" element={<HostLogin />} />
+          <Route path="/host-signup" element={<HostSignup />}/>
+          <Route path="/host-otp-verification" element={<HostOTPVerification />} />
           <Route element={<HostLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/booking-detail" element={<BookingDetail />} />
+            <Route path="/bookings" element={<Bookings />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/host-inbox" element={<HostInbox />} />
+            <Route path="/host-my-profile" element={<HostMyProfile />} />
           </Route>
-          {/* Other routes can be added here */}
         </Routes>
       </Router>
     </AuthProvider>

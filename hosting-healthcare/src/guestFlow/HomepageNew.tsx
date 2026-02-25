@@ -265,7 +265,7 @@ const HomepageNew: React.FC = () => {
           <section className="section-container property-to-rent-section">
               <div className="rent-cta-banner">
                   <span className="rent-cta-text">Ready to List Your Property for Healthcare Professionals?</span> 
-                  <button className="rent-cta-btn" onClick={() => isAuthenticated ? navigate('/host/dashboard') : navigate('/login')}>List Your Property</button>
+                  <button className="rent-cta-btn" onClick={() => window.open('/host-login', '_blank')}>List Your Property</button>
               </div>
 
               <div className="rent-blue-background">
@@ -450,8 +450,8 @@ const HomepageNew: React.FC = () => {
                           <p className="plan-desc">Show social proof notifications to increase leads and sales.</p>
                           
                           <div className="plan-price-row">
-                              <span className="price-value">$12.99</span>
-                              <span className="price-period">/monthly</span>
+                              <span className="price-value">${billingCycle === 'monthly' ? '12.99' : '129.99'}</span>
+                              <span className="price-period">/{billingCycle === 'monthly' ? 'monthly' : 'yearly'}</span>
                           </div>
 
                           <button className="get-started-btn">

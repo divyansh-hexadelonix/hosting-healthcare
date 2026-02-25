@@ -1,5 +1,5 @@
 .dashboard-content {
-  --primary-purple: #5c35d6;
+  --primary-purple: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   --border-color: #eaeaea;
   --text-main: #222222;
   --text-muted: #717171;
@@ -79,6 +79,7 @@
   padding: 8px 16px;
   margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  max-width: 820px;
 }
 
 .toolbar-left {
@@ -107,14 +108,66 @@
 }
 
 .toolbar-dropdown {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-main);
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.toolbar-dropdown:hover {
+  background: #f5f5f5;
+}
+
+.dashboard-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+  z-index: 100;
+  min-width: 130px;
+  overflow: hidden;
+  animation: dashboard-menu-in 0.12s ease;
+}
+
+@keyframes dashboard-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-dropdown-menu--wide {
+  min-width: 200px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.dashboard-dropdown-item {
+  padding: 9px 14px;
+  font-size: 0.88rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.dashboard-dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.dashboard-dropdown-item.active {
+  background: var(--primary-purple);
+  color: white;
+  font-weight: 600;
 }
 
 .toolbar-search {
@@ -205,7 +258,7 @@
 }
 
 .view-details-btn {
-  background-color: var(--primary-purple);
+  background: var(--primary-purple);
   color: white;
   border: none;
   padding: 10px 24px;
@@ -220,7 +273,39 @@
   opacity: 0.9;
 }
 
-/* Responsive adjustments */
+/* View All button */
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.section-title-row .section-title {
+  margin-bottom: 0;
+}
+
+.dashboard-view-all-btn {
+  background: none;
+  border: none;
+  background: var(--primary-purple);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 0.93rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s;
+}
+
+.dashboard-view-all-btn:hover {
+  opacity: 0.75;
+}
+
+/* Responsive */
 @media (max-width: 1024px) {
   .insights-grid {
     grid-template-columns: repeat(2, 1fr);

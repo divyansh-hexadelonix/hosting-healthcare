@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../assets/AuthContext';
-import './OTPverification.css';
+import './hostOTPverification.css';
 import Logo from '../assets/logo.png';
 
 interface LocationState {
@@ -10,10 +9,9 @@ interface LocationState {
   formData?: any;
 }
 
-const OTPVerification: React.FC = () => {
+const HostOTPVerification: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
   const state = location.state as LocationState;
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
@@ -37,7 +35,7 @@ const OTPVerification: React.FC = () => {
   // Redirect if no phone number provided
   useEffect(() => {
     if (!state?.phoneNumber) {
-      navigate('/signup');
+      navigate('/host-signup');
     }
   }, [state, navigate]);
 
@@ -123,7 +121,7 @@ const OTPVerification: React.FC = () => {
         contactNumber: state.formData.contactNumber,
         medicalLicense: state.formData.licenseNumber,
         profileImage: "https://img.freepik.com/free-photo/doctor-offering-medical-advice-virtual-appointment_23-2149309824.jpg?w=100", // Default Avatar
-        role: 'guest'
+        role: 'host'
       };
 
       // 2. Save to localStorage "Database"
@@ -139,17 +137,12 @@ const OTPVerification: React.FC = () => {
       localStorage.setItem('hh_users_db', JSON.stringify(existingUsers));
 
       // 3. Auto Login
-      login({
-        name: newUser.name,
-        email: newUser.email,
-        profileImage: newUser.profileImage,
-        contactNumber: newUser.contactNumber,
-        medicalLicense: newUser.medicalLicense,
-      });
+      localStorage.setItem('hh_host_user', JSON.stringify(newUser));
+      window.dispatchEvent(new Event('hh_host_user_updated'));
 
       // Success - navigate to home (Header will update automatically)
       alert('OTP Verified! Account created successfully.');
-      navigate('/');
+      navigate('/dashboard');
       
     } catch (err) {
       setError('Invalid OTP. Please try again.');
@@ -250,4 +243,5 @@ const OTPVerification: React.FC = () => {
   );
 };
 
-export default OTPVerification;
+
+export default HostOTPVerification;

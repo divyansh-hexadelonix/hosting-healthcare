@@ -31,7 +31,7 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   toggleWishlist: (propertyId: string) => void;
-  sendBookingRequest: (request: Omit<BookingRequest, 'bookingId' | 'status' | 'requestDate'>) => void;
+  sendBookingRequest: (request: Omit<BookingRequest, 'status' | 'requestDate'>) => void;
   withdrawBookingRequest: (bookingId: string) => void;
 }
 
@@ -120,12 +120,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // --- 5. NEW: Send Booking Request ---
-  const sendBookingRequest = (requestData: Omit<BookingRequest, 'bookingId' | 'status' | 'requestDate'>) => {
+  const sendBookingRequest = (requestData: Omit<BookingRequest, 'status' | 'requestDate'>) => {
     if (!user) return;
     
     const newRequest: BookingRequest = {
         ...requestData,
-        bookingId: 'BK-' + Date.now().toString().slice(-6), // Generate simple unique ID
+        // Use provided bookingId (shared with hh_host_requests) or fall back to generated one
+        bookingId: requestData.bookingId || ('BK-' + Date.now()),
         status: 'Pending',
         requestDate: new Date().toLocaleDateString()
     };
