@@ -693,6 +693,7 @@
 .dot.purple { background-color: #8b5cf6; }
 .dot.red { background-color: #ff5a5f; }
 .dot.green { background-color: #22c55e; }
+.dot.orange { background-color: #e65100;}
 
 .calendar-month-selector {
     display: flex;
@@ -723,7 +724,7 @@
     margin-bottom: 24px;
 }
 
-.calendar-day {
+.sd-calendar-day {
     height: 36px;
     display: flex;
     align-items: center;
@@ -735,25 +736,36 @@
     color: #666;
 }
 
-.calendar-day.faded {
+.sd-calendar-day.faded {
     color: #ccc;
     cursor: default;
 }
 
-.calendar-day.available {
+.sd-calendar-day.available {
     background-color: #8b5cf6;
     color: white;
 }
 
-.calendar-day.unavailable {
+.sd-calendar-day.cal-unavailable {
     background-color: #ff5a5f;
     color: white;
     cursor: not-allowed;
 }
 
-.calendar-day.booked {
+.sd-calendar-day.booked {
     background-color: #22c55e;
     color: white;
+}
+
+.sd-calendar-day.cal-booked-range {
+    background-color: #e65100;
+    color: white;
+    cursor: not-allowed;
+}
+
+.sd-calendar-day.past {
+    color: #ccc;
+    cursor: not-allowed;
 }
 
 .calendar-footer {

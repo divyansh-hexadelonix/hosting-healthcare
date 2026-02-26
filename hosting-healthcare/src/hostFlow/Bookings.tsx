@@ -308,7 +308,7 @@ const Bookings: React.FC = () => {
   );
 
   const handleViewDetails = (row: any) => {
-    const matched = propertiesData.find(p => p.hotelName === row.property);
+    const matched = propertiesData.find(p => p.propertyName === row.property);
     navigate('/booking-detail', {
       state: {
         row: {

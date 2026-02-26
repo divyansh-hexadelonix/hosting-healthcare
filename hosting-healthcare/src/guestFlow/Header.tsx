@@ -339,7 +339,7 @@ const Header: React.FC = () => {
                     </div>
                     
                     <ul className="dropdown-links">
-                      <li onClick={() => navigate('/my-bookings')}>
+                      <li onClick={() => { navigate('/my-bookings'); setIsDropdownOpen(false); }}>
                         <Calendar size={18} /> My Bookings
                       </li>
                       <li onClick={() => { navigate('/inbox'); setIsDropdownOpen(false); }} className="dropdown-link-inbox">
@@ -348,7 +348,7 @@ const Header: React.FC = () => {
                           <span className="dropdown-msg-badge">{totalUnread > 9 ? '9+' : totalUnread}</span>
                         )}
                       </li>
-                      <li onClick={() => navigate('/wishlist')}>
+                      <li onClick={() => { navigate('/wishlist'); setIsDropdownOpen(false); }}>
                         <Heart size={18} /> Wishlist
                       </li>
                     </ul>

@@ -106,7 +106,7 @@ const BookingDetail: React.FC = () => {
   }, [row]);
 
   const propertyData = useMemo(() =>
-    propertiesData.find(p => p.hotelName === row?.property),
+    propertiesData.find(p => p.propertyName === row?.property),
   [row]);
 
   const propertyImage = propertyData?.image ||

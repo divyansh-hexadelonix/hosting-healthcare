@@ -30,14 +30,14 @@ const Wishlist: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   const wishlistedProperties = propertiesData.filter((property) =>
-    user?.wishlist?.includes(property.id.toString())
+    user?.wishlist?.includes(String(property.id))
   );
 
-  const handleCardClick = (propertyId: number) => {
+  const handleCardClick = (propertyId: number | string) => {
     navigate('/stay-details', { state: { propertyId } });
   };
 
-  const handleRemoveClick = (e: React.MouseEvent, propertyId: number) => {
+  const handleRemoveClick = (e: React.MouseEvent, propertyId: number | string) => {
     e.stopPropagation(); 
     toggleWishlist(propertyId.toString());
   };
@@ -60,8 +60,8 @@ const Wishlist: React.FC = () => {
                 // Calculate dynamic rating
                 const propertyReviews = localReviews[property.id] || [];
                 const allReviews = [...propertyReviews, ...(property.reviewsList || [])];
-                const totalRating = allReviews.reduce((acc, r) => acc + r.rating, 0);
-                const avgRating = allReviews.length > 0 ? (totalRating / allReviews.length).toFixed(1) : property.rating;
+                const totalRating = allReviews.reduce((acc, r) => acc + Number(r.rating), 0);
+                const avgRating = allReviews.length > 0 ? (totalRating / allReviews.length).toFixed(1) : Number(property.rating);
                 const reviewCount = allReviews.length > 0 ? allReviews.length : property.reviews;
                 return (
                 <div
@@ -72,7 +72,7 @@ const Wishlist: React.FC = () => {
                   <div className="wishlist-image-container">
                     <img
                       src={property.image}
-                      alt={property.hotelName}
+                      alt={property.propertyName}
                       className="wishlist-image"
                     />
                     <button
@@ -91,7 +91,7 @@ const Wishlist: React.FC = () => {
 
                   <div className="wishlist-card-content">
                     <div className="wishlist-card-header">
-                      <h3 className="wishlist-title">{property.hotelName}</h3>
+                      <h3 className="wishlist-title">{property.propertyName}</h3>
                       <div className="wishlist-price-box">
                         <span className="wishlist-price">{property.price}</span>
                         <span className="wishlist-price-label">/night</span>

@@ -60,14 +60,14 @@ const HomepageNew: React.FC = () => {
         }
         const results = propertiesData.filter(p => 
             p.city.toLowerCase().includes(query) || 
-            p.hotelName.toLowerCase().includes(query)
+            p.propertyName.toLowerCase().includes(query)
         );
         setFilteredProperties(results);
         setLoading(false);
     }, 500);
   };
 
-  const handleWishlistClick = (e: React.MouseEvent, propertyId: number) => {
+  const handleWishlistClick = (e: React.MouseEvent, propertyId: number | string) => {
     e.stopPropagation();
     if (!isAuthenticated) {
       navigate('/login');
@@ -213,7 +213,7 @@ const HomepageNew: React.FC = () => {
                 return (
                 <div key={property.id} className="property-card" onClick={() => navigate('/stay-details', { state: { propertyId: property.id } })}>
                   <div className="property-image-container">
-                      <img src={property.image} alt={property.hotelName} className="property-image" />
+                      <img src={property.image} alt={property.propertyName} className="property-image" />
                       <button className="wishlist-button" onClick={(e) => handleWishlistClick(e, property.id)}>
                         <Heart 
                           size={24} 
@@ -226,7 +226,7 @@ const HomepageNew: React.FC = () => {
                   
                   <div className="property-content">
                     <div className="property-header-row">
-                      <h3 className="property-title">{property.hotelName}</h3>
+                      <h3 className="property-title">{property.propertyName}</h3>
                        <div className="price-container-inline">
                           <span className="price-amount">{property.price}</span>
                           <span className="price-label">/night</span>
@@ -524,7 +524,7 @@ const HomepageNew: React.FC = () => {
                         return (
                         <div key={p.id} className="property-card" onClick={() => navigate('/stay-details', { state: { propertyId: p.id } })}>
                             <div className="property-image-container">
-                                <img src={p.image} alt={p.hotelName} className="property-image" />
+                                <img src={p.image} alt={p.propertyName} className="property-image" />
                                 <button className="wishlist-button" onClick={(e) => handleWishlistClick(e, p.id)}>
                                   <Heart 
                                     size={24} 
@@ -536,7 +536,7 @@ const HomepageNew: React.FC = () => {
                             </div>
                             <div className="property-content">
                                 <div className="property-header-row">
-                                    <h3 className="property-title">{p.hotelName}</h3>
+                                    <h3 className="property-title">{p.propertyName}</h3>
                                     <div className="price-container-inline">
                                         <span className="price-amount">{p.price}</span>
                                         <span className="price-label">/night</span>

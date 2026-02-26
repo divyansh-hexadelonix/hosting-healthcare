@@ -234,7 +234,7 @@ const Layout: React.FC = () => {
     markOneAsRead(n.id);
     setIsNotifOpen(false);
 
-    const matched = propertiesData.find(p => p.hotelName === n.property);
+    const matched = propertiesData.find(p => p.propertyName === n.property);
     const row = {
       ...(n.fullRequest || {}),
       id: n.id,

@@ -3,7 +3,6 @@ import { MapPin, Calendar, SlidersHorizontal, Search, X, Building2, Home, Bankno
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../assets/AuthContext';
 import './BrowseStays.css';
-import { propertiesData as properties } from '../data/propertiesData';
 
 
 const formatDateDisplay = (dateString: string) => {
@@ -14,7 +13,7 @@ const formatDateDisplay = (dateString: string) => {
 
 function BrowseStays() {
   const navigate = useNavigate();
-  const { user, isAuthenticated, toggleWishlist } = useAuth(); 
+  const { user, isAuthenticated, toggleWishlist, properties } = useAuth(); 
   
   const [location, setLocation] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
@@ -93,7 +92,7 @@ function BrowseStays() {
     const searchLocationLower = searchParams.location.toLowerCase();
     const matchesSearch = searchParams.location === '' || 
       property.city.toLowerCase().includes(searchLocationLower) ||
-      property.hotelName.toLowerCase().includes(searchLocationLower);
+      property.propertyName.toLowerCase().includes(searchLocationLower);
 
     // 2. Checkbox Filtering
     if (!isFilterActive) return matchesSearch;
@@ -305,7 +304,7 @@ function BrowseStays() {
               }
             }}>
               <div className="property-image-container">
-                <img src={p.image} alt={p.hotelName} className="property-image" />
+                <img src={p.image} alt={p.propertyName} className="property-image" />
                 <button 
                   className="wishlist-button" 
                   onClick={(e) => { e.stopPropagation(); if (!isAuthenticated) navigate('/login'); else toggleWishlist(p.id.toString()); }}
@@ -321,7 +320,7 @@ function BrowseStays() {
               
               <div className="property-content">
                 <div className="property-header-row">
-                  <h3 className="property-title">{p.hotelName}</h3>
+                  <h3 className="property-title">{p.propertyName}</h3>
                    <div className="price-container-inline">
                       <span className="price-amount">{p.price}</span>
                       <span className="price-label">/night</span>

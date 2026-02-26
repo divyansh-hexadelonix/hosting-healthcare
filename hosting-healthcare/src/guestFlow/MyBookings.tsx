@@ -73,7 +73,7 @@ const MyBookings: React.FC = () => {
       if (!user) return;
       const statuses: Record<string, RequestStatus> = {};
       (user.sentRequests || []).forEach(req => {
-        statuses[req.bookingId] = getRequestStatus(req.bookingId, req.hotelName, user.name);
+        statuses[req.bookingId] = getRequestStatus(req.bookingId, req.propertyName, user.name);
       });
       setRequestStatuses(statuses);
     };
@@ -132,7 +132,7 @@ const MyBookings: React.FC = () => {
           bookingId: cancelTargetId,
           guestName: user.name,
           guestAvatar: user.profileImage || '',
-          hotelName: req.hotelName,
+          hotelName: req.propertyName,
           hostEmail: hostReq?.hostEmail || 'david@gmail.com',
           hostName: hostReq?.hostName || 'David Beckham',
           timestamp: new Date().toISOString(),
@@ -168,7 +168,7 @@ const MyBookings: React.FC = () => {
                   return (
                   <div key={p.id} className="property-card" onClick={() => navigate('/stay-details', {state:{propertyId:p.id}})}>
                       <div className="property-image-container">
-                        <img src={p.image} alt={p.hotelName} className="property-image" />
+                        <img src={p.image} alt={p.propertyName} className="property-image" />
                         <button 
                             className="wishlist-button"
                             onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id.toString()); }}
@@ -178,7 +178,7 @@ const MyBookings: React.FC = () => {
                       </div>
                       <div className="property-content">
                           <div className="property-header-row">
-                            <h3 className="property-title">{p.hotelName}</h3>
+                            <h3 className="property-title">{p.propertyName}</h3>
                             <div className="price-container-inline">
                                 <span className="price-amount">{p.price}</span>
                                 <span className="price-label">/night</span>
@@ -210,9 +210,14 @@ const MyBookings: React.FC = () => {
 
   const renderSentRequests = () => {
       const requests = user.sentRequests || [];
-      if (requests.length === 0) return <EmptyState msg="No booking requests sent." />;
 
       return (
+          <>
+          <div className="cancelled-info-note">
+              <span className="info-icon"><Clock size={18}/></span>
+              <span>Request rejected bookings are automatically removed after <strong>24 hrs</strong>.</span>
+          </div>
+          {requests.length === 0 ? <EmptyState msg="No booking requests sent." /> : (
           <div className="bookings-grid">
               {requests.map(req => {
                   const p = propertiesData.find(prop => prop.id === req.propertyId);
@@ -228,7 +233,7 @@ const MyBookings: React.FC = () => {
                   return (
                   <div key={req.bookingId} className="property-card">
                       <div className="property-image-container">
-                        <img src={req.image} alt={req.hotelName} className="property-image" />
+                        <img src={req.image} alt={req.propertyName} className="property-image" />
                         <button 
                             className="wishlist-button"
                             onClick={(e) => { e.stopPropagation(); toggleWishlist(req.propertyId.toString()); }}
@@ -243,7 +248,7 @@ const MyBookings: React.FC = () => {
                       </div>
                       <div className="property-content">
                           <div className="property-header-row">
-                              <h3 className="property-title">{req.hotelName}</h3>
+                              <h3 className="property-title">{req.propertyName}</h3>
                               <div className="price-container-inline">
                                   <span className="price-amount">{req.price}</span>
                                   <span className="price-label">/night</span>
@@ -253,6 +258,11 @@ const MyBookings: React.FC = () => {
                               <MapPin size={14} color="#777" />
                               <span className="city-text">{req.city}</span>
                           </div>
+                          {p && (
+                            <div className="property-meta">
+                                <span className="meta-value">{p.capacity}</span>
+                            </div>
+                          )}
                           {p && (
                               <div className="rating-review-container">
                                   <div className="property-rating">
@@ -314,6 +324,8 @@ const MyBookings: React.FC = () => {
                   </div>
               )})}
           </div>
+          )}
+          </>
       );
   };
 
@@ -341,7 +353,7 @@ const MyBookings: React.FC = () => {
                           return (
                               <div key={req.bookingId} className="property-card">
                                   <div className="property-image-container">
-                                      <img src={req.image} alt={req.hotelName} className="property-image" />
+                                      <img src={req.image} alt={req.propertyName} className="property-image" />
                                       <button
                                           className="wishlist-button"
                                           onClick={(e) => { e.stopPropagation(); toggleWishlist(req.propertyId.toString()); }}
@@ -356,7 +368,7 @@ const MyBookings: React.FC = () => {
                                   </div>
                                   <div className="property-content">
                                       <div className="property-header-row">
-                                          <h3 className="property-title">{req.hotelName}</h3>
+                                          <h3 className="property-title">{req.propertyName}</h3>
                                           <div className="price-container-inline">
                                               <span className="price-amount">{req.price}</span>
                                               <span className="price-label">/night</span>
@@ -366,6 +378,11 @@ const MyBookings: React.FC = () => {
                                           <MapPin size={14} color="#777" />
                                           <span className="city-text">{req.city}</span>
                                       </div>
+                                      {p && (
+                                        <div className="property-meta">
+                                            <span className="meta-value">{p.capacity}</span>
+                                        </div>
+                                      )}
                                       {p && (
                                           <div className="rating-review-container">
                                               <div className="property-rating">

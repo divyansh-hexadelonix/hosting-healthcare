@@ -1,0 +1,458 @@
+.el-wrapper {
+  padding: 0 4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 900px;
+}
+
+.el-page-header {
+  margin-bottom: 28px;
+}
+
+.el-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 4px;
+}
+
+.el-page-sub {
+  font-size: 13.5px;
+  color: #888;
+  margin: 0;
+}
+
+/* Form container */
+.el-form {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #ebebeb;
+  padding: 28px 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.el-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 600px) {
+  .el-row-2 { grid-template-columns: 1fr; }
+}
+
+.el-section {
+  margin-top: 22px;
+}
+
+.el-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Labels */
+.el-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.el-label--req::after {
+  content: "*";
+  color: #e74c3c;
+  margin-left: 3px;
+}
+
+.el-label-muted {
+  color: #888;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.el-sublabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Inputs */
+.el-input {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.el-input:focus {
+  border-color: #693eea;
+  background: #fff;
+}
+
+.el-input--err {
+  border-color: #e74c3c !important;
+}
+
+.el-textarea {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 90px;
+}
+
+.el-textarea:focus {
+  border-color: #693eea;
+  background: #fff;
+}
+
+.el-err {
+  font-size: 12px;
+  color: #e74c3c;
+  margin-top: 2px;
+}
+
+/* Select */
+.el-select-wrap {
+  position: relative;
+}
+
+.el-select {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 36px 10px 14px;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.el-select:focus {
+  border-color: #693eea;
+  background: #fff;
+}
+
+.el-select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+}
+
+/* Place Type toggle group */
+.el-type-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.el-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.el-type-btn:hover {
+  border-color: #693eea;
+  color: #693eea;
+  background: #f5f0ff;
+}
+
+.el-type-btn--active {
+  background: #693eea;
+  color: #fff;
+  border-color: #693eea;
+}
+
+.el-type-btn--active:hover {
+  background: #5a30d4;
+  color: #fff;
+}
+
+/* Manage availability button */
+.el-avail-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  background: #f4f4f4;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-top: 8px;
+  font-family: inherit;
+}
+
+.el-avail-btn:hover {
+  border-color: #693eea;
+  background: #f5f0ff;
+  color: #693eea;
+}
+
+/* Amenities grid */
+.el-amenity-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.el-amenity-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #444;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+
+.el-amenity-btn:hover {
+  border-color: #693eea;
+  color: #693eea;
+  background: #f5f0ff;
+}
+
+.el-amenity-btn--active {
+  background: #693eea;
+  color: #fff;
+  border-color: #693eea;
+}
+
+.el-amenity-btn--active:hover {
+  background: #5a30d4;
+}
+
+/* Footer */
+.el-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.el-btn-cancel {
+  padding: 11px 30px;
+  border: 1.5px solid #ddd;
+  border-radius: 30px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.el-btn-cancel:hover {
+  border-color: #aaa;
+  background: #fafafa;
+}
+
+.el-btn-submit {
+  padding: 11px 36px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 3px 10px rgba(105, 62, 234, 0.3);
+}
+
+.el-btn-submit:hover {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  transform: scale(1.02);
+}
+
+/* Country Dropdown Styles */
+.el-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.el-country-search {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.el-country-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 13px;
+}
+
+.el-country-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.el-country-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.el-country-item:hover {
+  background-color: #f5f5f5;
+  color: #6d28d9;
+}
+
+.el-country-empty {
+  padding: 12px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+}
+
+.calendar-footer {
+  gap: 12px;
+}
+
+.cal-btn.continue {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  border: none;
+  color: white;
+}
+
+/* Date Action Modal */
+.date-action-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  z-index: 2600;
+  width: 320px;
+  text-align: center;
+  border: 1px solid #f0f0f0;
+  animation: scaleInCenter 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.date-action-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.date-action-modal h4 {
+  margin: 0 0 24px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.date-action-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.date-action-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.date-action-btn.cancel {
+  background: white;
+  color: #1a1a2e;
+  border: 1px solid #ddd;
+}
+
+.date-action-btn.cancel:hover {
+  background: #f9f9f9;
+  border-color: #ccc;
+}
+
+.date-action-btn.confirm {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+  color: white;
+}
+
+.date-action-btn.confirm:hover {
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+@keyframes scaleInCenter {
+  from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
