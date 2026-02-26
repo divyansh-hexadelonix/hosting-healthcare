@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Filter, Search, RotateCcw, ChevronDown } from 'lucide-react';
 import { propertiesData, mockBookingRequests } from '../data/propertiesData';
 import './Bookings.css';
@@ -190,10 +190,24 @@ const Bookings: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Tab: 0 = Booking Requests, 1 = Upcoming Bookings
-  const initialTab = (location.state as any)?.tab ?? 0;
-  const [activeTab, setActiveTab] = useState<0 | 1>(initialTab);
+  // Tab: 'requests' or 'upcoming'
+  const activeTab = searchParams.get('tab') || 'requests';
+
+  const setActiveTab = (tab: 'requests' | 'upcoming') => {
+    setSearchParams({ tab });
+  };
+
+  // Handle initial navigation with state (e.g., from Dashboard)
+  useEffect(() => {
+    const initialTabFromState = (location.state as any)?.tab; // 0 or 1
+    if (initialTabFromState !== undefined) {
+      setActiveTab(initialTabFromState === 1 ? 'upcoming' : 'requests');
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [allRequests, setAllRequests] = useState<any[]>([]);
 
@@ -326,21 +340,21 @@ const Bookings: React.FC = () => {
       {/*-- Tabs --*/}
       <div className="bk-tabs">
         <button
-          className={`bk-tab ${activeTab === 0 ? 'bk-tab--active' : ''}`}
-          onClick={() => setActiveTab(0)}
+          className={`bk-tab ${activeTab === 'requests' ? 'bk-tab--active' : ''}`}
+          onClick={() => setActiveTab('requests')}
         >
           Booking Request
         </button>
         <button
-          className={`bk-tab ${activeTab === 1 ? 'bk-tab--active' : ''}`}
-          onClick={() => setActiveTab(1)}
+          className={`bk-tab ${activeTab === 'upcoming' ? 'bk-tab--active' : ''}`}
+          onClick={() => setActiveTab('upcoming')}
         >
           Upcoming Bookings
         </button>
       </div>
 
       {/*-- Booking Requests Tab --*/}
-      {activeTab === 0 && (
+      {activeTab === 'requests' && (
         <>
           <FilterToolbar
             searchText={brSearch}
@@ -361,7 +375,7 @@ const Bookings: React.FC = () => {
       )}
 
       {/*-- Upcoming Bookings Tab --*/}
-      {activeTab === 1 && (
+      {activeTab === 'upcoming' && (
         <>
           <FilterToolbar
             searchText={ubSearch}

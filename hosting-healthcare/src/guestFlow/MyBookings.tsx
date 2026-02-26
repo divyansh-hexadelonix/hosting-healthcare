@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { MapPin, Frown, AlertCircle, Heart, Star, Clock, CheckCircle2, XCircle, Hourglass } from 'lucide-react';
 import { useAuth } from '../assets/AuthContext';
 import { propertiesData } from '../data/propertiesData';
@@ -34,10 +34,23 @@ const MyBookings: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated, withdrawBookingRequest, toggleWishlist } = useAuth();
 
-  // Allow navigating to a specific tab via router state
-  const defaultTab = (location.state as any)?.defaultTab as TabType | undefined;
-  const [activeTab, setActiveTab] = useState<TabType>(defaultTab || 'upcoming');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = (searchParams.get('tab') as TabType) || 'upcoming';
 
+  const setActiveTab = (tab: TabType) => {
+    setSearchParams({ tab });
+  };
+
+  // On initial mount, if we have a `defaultTab` in location.state from another page,
+  // sync it to the URL search params to make it persistent.
+  useEffect(() => {
+    const defaultTabFromState = (location.state as any)?.defaultTab as TabType | undefined;
+    if (defaultTabFromState) {
+      setSearchParams({ tab: defaultTabFromState }, { replace: true });
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
   // Track live status of each sent request
   const [requestStatuses, setRequestStatuses] = useState<Record<string, RequestStatus>>({});
   

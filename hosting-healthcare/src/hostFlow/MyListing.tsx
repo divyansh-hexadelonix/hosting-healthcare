@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./MyListing.css";
 import "./AddListing.css";
 import { propertiesData } from "../data/propertiesData";
@@ -879,7 +879,9 @@ const AddListingForm: React.FC<AddListingFormProps> = ({
 
 // Main MyListing Component
 const MyListing: React.FC = () => {
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = (searchParams.get("view") as "list" | "add" | "edit") || "list";
+  const editId = searchParams.get("id");
   const [filterDate, setFilterDate] = useState<string>("");
   const [filterCalOpen, setFilterCalOpen] = useState(false);
   const [filterCalView, setFilterCalView] = useState(new Date());
@@ -887,8 +889,13 @@ const MyListing: React.FC = () => {
   const [filterSession, setFilterSession] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [statusMap, setStatusMap] = useState<Record<string, StatusValue>>({});
-  const [customListings, setCustomListings] = useState<ListingRow[]>([]);
-  const [editingListing, setEditingListing] = useState<ListingRow | null>(null);
+  const [customListings, setCustomListings] = useState<ListingRow[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("hh_new_listings") || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [sessionOpen, setSessionOpen] = useState(false);
   const sessionRef = useRef<HTMLDivElement>(null);
   const dateCalRef = useRef<HTMLDivElement>(null);
@@ -977,6 +984,11 @@ const MyListing: React.FC = () => {
     [customListings, listingEdits]
   );
 
+  const editingListing = useMemo(() => {
+    if (view !== "edit" || !editId) return null;
+    return allListings.find((l) => l.id === editId) || null;
+  }, [view, editId, allListings]);
+
   const filteredListings = useMemo(() => {
     return allListings.filter((l) => {
       const matchSearch =
@@ -997,13 +1009,12 @@ const MyListing: React.FC = () => {
       localStorage.setItem("hh_new_listings", JSON.stringify(updated));
       setCustomListings(updated);
     } catch {}
-    setView("list");
+    setSearchParams({});
     window.dispatchEvent(new Event("hh_requests_updated"));
   };
 
   const handleEdit = (listing: ListingRow) => {
-    setEditingListing(listing);
-    setView("edit");
+    setSearchParams({ view: "edit", id: listing.id });
   };
 
   const handleSaveEdit = (updatedListing: ListingRow) => {
@@ -1019,8 +1030,7 @@ const MyListing: React.FC = () => {
       edits[updatedListing.id] = updatedListing;
       localStorage.setItem("hh_listing_edits", JSON.stringify(edits));
     }
-    setView("list");
-    setEditingListing(null);
+    setSearchParams({});
     window.dispatchEvent(new Event("hh_requests_updated"));
   };
 
@@ -1037,7 +1047,7 @@ const MyListing: React.FC = () => {
       <AddListingForm
         hostName={hostUser?.name || "David Beckham"}
         hostEmail={hostUser?.email || "david@gmail.com"}
-        onCancel={() => setView("list")}
+        onCancel={() => setSearchParams({})}
         onSubmit={handleAddSubmit}
       />
     );
@@ -1048,7 +1058,7 @@ const MyListing: React.FC = () => {
     return (
       <EditListing
         listing={editingListing}
-        onCancel={() => { setView("list"); setEditingListing(null); }}
+        onCancel={() => setSearchParams({})}
         onSave={handleSaveEdit}
       />
     );
@@ -1275,7 +1285,7 @@ const MyListing: React.FC = () => {
           </div>
         </div>
 
-        <button className="btn-add-listing" onClick={() => setView("add")}>
+        <button className="btn-add-listing" onClick={() => setSearchParams({ view: "add" })}>
           Add New Listing <Plus size={14} />
         </button>
       </div>
